@@ -1,2 +1,17 @@
-node_modules
-noted.txt
+# dependencies
+/node_modules
+
+# misc
+.env
+
+# build
+/dist
+
+#log
+/logs
+
+# upload
+/uploads
+
+# note
+note.txt
