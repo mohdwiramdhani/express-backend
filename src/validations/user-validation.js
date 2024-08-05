@@ -2,8 +2,7 @@ import Joi from "joi";
 
 const registerUserValidation = Joi.object({
     username: Joi.string().max(100).required(),
-    password: Joi.string().max(100).required(),
-    email: Joi.string().max(200).email().optional(),
+    password: Joi.string().max(100).required()
 });
 
 const loginUserValidation = Joi.object({
@@ -14,7 +13,6 @@ const loginUserValidation = Joi.object({
 const updateUserValidation = Joi.object({
     username: Joi.string().max(100).required(),
     password: Joi.string().max(100).optional(),
-    email: Joi.string().max(200).email().optional(),
 })
 
 const getUserValidation = Joi.number().positive().required();

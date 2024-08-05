@@ -8,31 +8,33 @@ import bcrypt from "bcrypt";
 const register = async (request) => {
     const user = validate(registerUserValidation, request);
 
-    const existingUser = await prismaClient.user.findFirst({
+    const countUser = await prismaClient.user.count({
         where: {
-            OR: [
-                { username: user.username },
-                { email: user.email }
-            ]
+            username: user.username
         }
     });
 
-    if (existingUser) {
-        if (existingUser.username === user.username) {
-            throw new ResponseError(400, "Username already exists");
-        }
-        if (existingUser.email === user.email) {
-            throw new ResponseError(400, "Email already exists");
-        }
+    if (countUser === 1) {
+        throw new ResponseError(400, "Username already exists");
     }
 
     user.password = await bcrypt.hash(user.password, 10);
 
+    const adminRoleId = 1;
+
     return prismaClient.user.create({
-        data: user,
+        data: {
+            username: user.username,
+            password: user.password,
+            roleId: adminRoleId
+        },
         select: {
             username: true,
-            email: true
+            role: {
+                select: {
+                    name: true
+                }
+            }
         }
     });
 }
@@ -45,6 +47,7 @@ const login = async (request) => {
             username: loginRequest.username
         },
         select: {
+            id: true,
             username: true,
             password: true
         }
@@ -62,8 +65,7 @@ const login = async (request) => {
     const token = jwt.sign({ id: user.id }, 'secret_key', { expiresIn: '10d' });
 
     return {
-        token,
-        id: user.id
+        token
     };
 }
 
