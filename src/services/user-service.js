@@ -101,8 +101,41 @@ const get = async (id) => {
     };
 }
 
+const update = async (request) => {
+    const user = validate(updateUserValidation, request);
+
+    const existingUser = await prismaClient.user.findUnique({
+        where: {
+            id: user.id // Gunakan ID untuk menemukan pengguna
+        }
+    });
+
+    if (!existingUser) {
+        throw new ResponseError(404, "User not found");
+    }
+
+    const data = {};
+    if (user.username) {
+        data.username = user.username;
+    }
+    if (user.password) {
+        data.password = await bcrypt.hash(user.password, 10);
+    }
+
+    return prismaClient.user.update({
+        where: {
+            id: user.id
+        },
+        data: data,
+        select: {
+            username: true
+        }
+    })
+}
+
 export default {
     register,
     login,
-    get
+    get,
+    update
 }
