@@ -37,7 +37,8 @@
                 },
                 "example": {
                   "data": {
-                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
                   },
                   "message": "Login successfully"
                 }
@@ -192,6 +193,73 @@
           }
         }
       }
+    },
+    "/api/v1/users/refresh-token": {
+      "post": {
+        "summary": "Refresh Token API",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              },
+              "example": {
+                "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Token Refresh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
+                },
+                "example": {
+                  "data": {
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzIyOTQ4NzQ1LCJleHAiOjE3MjI5NDk2NDV9.xZ5JLYCawlNNzoJ04X1d3GDv0IZywpLXSl-CsHQnsS8"
+                  },
+                  "message": "Token refreshed successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "\"refreshToken\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -222,11 +290,14 @@
           "data": {
             "type": "object",
             "properties": {
-              "token": {
+              "accessToken": {
+                "type": "string"
+              },
+              "refreshToken": {
                 "type": "string"
               }
             },
-            "required": ["token"]
+            "required": ["accessToken", "refreshToken"]
           },
           "message": {
             "type": "string"
@@ -260,6 +331,10 @@
         "properties": {
           "username": {
             "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": ["username"]
@@ -272,9 +347,40 @@
             "properties": {
               "username": {
                 "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "nullable": true
               }
             },
             "required": ["username"]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["data", "message"]
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": ["refreshToken"]
+      },
+      "RefreshTokenResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string"
+              }
+            },
+            "required": ["accessToken"]
           },
           "message": {
             "type": "string"
@@ -286,8 +392,7 @@
         "type": "object",
         "properties": {
           "errors": {
-            "type": "string",
-            "description": "Details about the error"
+            "type": "string"
           }
         },
         "required": ["errors"]
