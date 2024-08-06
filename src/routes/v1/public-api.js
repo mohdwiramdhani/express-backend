@@ -1,10 +1,11 @@
 import express from "express";
 import userController from "../../controllers/user-controller.js";
+import { loginRateLimiter, registerRateLimiter } from '../../config/rate-limit.js';
 
 const publicRouter = new express.Router();
 
-publicRouter.post('/users', userController.register);
-publicRouter.post('/users/login', userController.login);
+publicRouter.post('/users', registerRateLimiter, userController.register);
+publicRouter.post('/users/login', loginRateLimiter, userController.login);
 publicRouter.get('/test', (req, res) => {
     res.send("Hello, world");
 });
