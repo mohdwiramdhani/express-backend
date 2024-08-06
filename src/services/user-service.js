@@ -69,7 +69,32 @@ const login = async (request) => {
     };
 }
 
+const get = async (id) => {
+    id = validate(getUserValidation, id);
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            username: true,
+            role: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    });
+
+    if (!user) {
+        throw new ResponseError(404, "User not found");
+    }
+
+    return user;
+}
+
 export default {
     register,
-    login
+    login,
+    get
 }

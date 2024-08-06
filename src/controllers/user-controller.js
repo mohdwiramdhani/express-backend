@@ -24,7 +24,21 @@ const login = async (req, res, next) => {
     }
 }
 
+const get = async (req, res, next) => {
+    try {
+        const id = req.user.id;
+        const result = await userService.get(id);
+        res.status(200).json({
+            data: result,
+            message: "User retrieved successfully"
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
 export default {
     register,
     login,
+    get
 }
