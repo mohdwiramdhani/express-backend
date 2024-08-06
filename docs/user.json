@@ -37,10 +37,9 @@
                 },
                 "example": {
                   "data": {
-                    "id": 1,
-                    "username": "admin",
-                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJhbWEiLCJpYXQiOjE3MjI4NDIxNjAsImV4cCI6MTcyMzcwNjE2MH0.ih9AIiy5owl3RISv8wqg7CV_GECfkI5r3T9HVgZdFS0"
-                  }
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+                  },
+                  "message": "Login successfully"
                 }
               }
             }
@@ -50,16 +49,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "string",
-                      "description": "Details about the error"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "example": {
-                  "errors": "\"username\" is required. \"password\" is required."
+                  "errors": "\"username\" is not allowed to be empty. \"password\" is not allowed to be empty"
                 }
               }
             }
@@ -69,13 +62,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "string",
-                      "description": "Details about the error"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "example": {
                   "errors": "Username or password wrong"
@@ -88,16 +75,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "string",
-                      "description": "Details about the error"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "example": {
-                  "errors": "Too many login attempts from this IP, please try again later."
+                  "errors": "Too many requests, please try again later."
                 }
               }
             }
@@ -107,17 +88,10 @@
     },
     "/api/v1/users/current": {
       "get": {
-        "summary": "Get User API",
-        "parameters": [
+        "summary": "Get Current User API",
+        "security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer token",
-              "description": "JWT token for authentication"
-            }
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -130,10 +104,10 @@
                 },
                 "example": {
                   "data": {
-                    "id": 1,
                     "username": "admin",
-                    "email": "admin@gmail.com"
-                  }
+                    "role": "admin"
+                  },
+                  "message": "User retrieved successfully"
                 }
               }
             }
@@ -143,13 +117,72 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "string",
-                      "description": "Details about the error"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Current User API",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              },
+              "example": {
+                "username": "mimin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUserResponse"
+                },
+                "example": {
+                  "data": {
+                    "username": "mimin"
+                  },
+                  "message": "User updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "\"username\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "example": {
                   "errors": "Unauthorized"
@@ -162,6 +195,14 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token untuk autentikasi"
+      }
+    },
     "schemas": {
       "LoginRequest": {
         "type": "object",
@@ -181,19 +222,17 @@
           "data": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "integer"
-              },
-              "username": {
-                "type": "string"
-              },
               "token": {
                 "type": "string"
               }
             },
-            "required": ["id", "username", "token"]
+            "required": ["token"]
+          },
+          "message": {
+            "type": "string"
           }
-        }
+        },
+        "required": ["data", "message"]
       },
       "UserResponse": {
         "type": "object",
@@ -201,18 +240,57 @@
           "data": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "integer"              },
               "username": {
                 "type": "string"
               },
-              "email": {
-                "type": "string",
-                "nullable": true              }
+              "role": {
+                "type": "string"
+              }
             },
-            "required": ["id", "username"]
+            "required": ["username", "role"]
+          },
+          "message": {
+            "type": "string"
           }
-        }
+        },
+        "required": ["data", "message"]
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": ["username"]
+      },
+      "UpdateUserResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": ["username"]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["data", "message"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "string",
+            "description": "Details about the error"
+          }
+        },
+        "required": ["errors"]
       }
     }
   }
