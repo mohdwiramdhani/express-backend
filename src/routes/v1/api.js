@@ -5,9 +5,10 @@ import { authMiddleware } from "../../middlewares/auth-middleware.js";
 const userRouter = new express.Router();
 userRouter.use(authMiddleware);
 
+userRouter.post('/users/refresh-token', userController.refreshToken);
 userRouter.get('/users/current', userController.get);
 userRouter.patch('/users/current', userController.update);
 
 export {
     userRouter
-}
+};

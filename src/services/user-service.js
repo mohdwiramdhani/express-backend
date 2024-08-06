@@ -2,6 +2,7 @@ import { validate } from "../validations/validation.js";
 import { registerUserValidation, loginUserValidation, getUserValidation, updateUserValidation } from "../validations/user-validation.js";
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/token-utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -67,12 +68,14 @@ const login = async (request) => {
         throw new ResponseError(401, "Username or password wrong");
     }
 
-    const token = jwt.sign({ id: user.id }, 'secret_key', { expiresIn: '10d' });
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
     return {
-        token
+        accessToken,
+        refreshToken
     };
-}
+};
 
 const get = async (id) => {
     id = validate(getUserValidation, id);
@@ -133,9 +136,23 @@ const update = async (request) => {
     })
 }
 
+const refreshToken = async (refreshToken) => {
+    if (!refreshToken) throw new ResponseError(401, "Refresh token missing");
+
+    return new Promise((resolve, reject) => {
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY || 'refresh_secret_key', (err, decoded) => {
+            if (err) return reject(new ResponseError(403, "Invalid refresh token"));
+
+            const newAccessToken = generateAccessToken(decoded.id);
+            resolve({ accessToken: newAccessToken });
+        });
+    });
+};
+
 export default {
     register,
     login,
     get,
-    update
+    update,
+    refreshToken
 }

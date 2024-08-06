@@ -15,12 +15,10 @@ export const authMiddleware = async (req, res, next) => {
                 return res.status(401).json({ errors: "Unauthorized" });
             }
 
-            const id = decoded.id;
-            req.user = { id: id };
-            // req.user = { id: decoded.id };
+            req.user = { id: decoded.id };
             next();
         });
     } catch (error) {
         return res.status(500).json({ errors: "Internal Server Error" });
     }
-}
+};

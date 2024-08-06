@@ -54,9 +54,23 @@ const update = async (req, res, next) => {
     }
 }
 
+const refreshToken = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+        const result = await userService.refreshToken(refreshToken);
+        res.status(200).json({
+            data: result,
+            message: "Token refreshed successfully"
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 export default {
     register,
     login,
     get,
-    update
+    update,
+    refreshToken
 }
