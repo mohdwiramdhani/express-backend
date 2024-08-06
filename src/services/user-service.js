@@ -14,7 +14,7 @@ const register = async (request) => {
         }
     });
 
-    if (countUser === 1) {
+    if (countUser > 0) {
         throw new ResponseError(400, "Username already exists");
     }
 
@@ -22,7 +22,7 @@ const register = async (request) => {
 
     const adminRoleId = 1;
 
-    return prismaClient.user.create({
+    const createdUser = await prismaClient.user.create({
         data: {
             username: user.username,
             password: user.password,
@@ -37,6 +37,11 @@ const register = async (request) => {
             }
         }
     });
+
+    return {
+        username: createdUser.username,
+        role: createdUser.role.name
+    };
 }
 
 const login = async (request) => {
@@ -90,7 +95,10 @@ const get = async (id) => {
         throw new ResponseError(404, "User not found");
     }
 
-    return user;
+    return {
+        username: user.username,
+        role: user.role.name
+    };
 }
 
 export default {
