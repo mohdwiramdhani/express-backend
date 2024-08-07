@@ -12,6 +12,18 @@ const register = async (req, res, next) => {
     }
 }
 
+const registerStaff = async (req, res, next) => {
+    try {
+        const result = await userService.registerStaff(req.body);
+        res.status(201).json({
+            data: result,
+            message: "User registered successfully"
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
 const login = async (req, res, next) => {
     try {
         const result = await userService.login(req.body);
@@ -69,6 +81,7 @@ const refreshToken = async (req, res, next) => {
 
 export default {
     register,
+    registerStaff,
     login,
     get,
     update,
