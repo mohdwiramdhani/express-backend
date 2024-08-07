@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique @db.VarChar(100)
-  password String @db.VarChar(100)
-  roleId   Int
-  role     Role   @relation(fields: [roleId], references: [id])
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(100)
+  roleId    Int
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("users")
 }

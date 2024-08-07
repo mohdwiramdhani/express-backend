@@ -4,6 +4,8 @@ CREATE TABLE `users` (
     `username` VARCHAR(100) NOT NULL,
     `password` VARCHAR(100) NOT NULL,
     `roleId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `users_username_key`(`username`),
     PRIMARY KEY (`id`)
