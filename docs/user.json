@@ -173,7 +173,7 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "example": {
-                  "errors": "\"username\" is required"
+                  "errors": "Username already exists"
                 }
               }
             }
@@ -197,11 +197,6 @@
     "/api/v1/users/refresh-token": {
       "post": {
         "summary": "Refresh Token API",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -331,10 +326,6 @@
         "properties": {
           "username": {
             "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
           }
         },
         "required": ["username"]
@@ -347,10 +338,6 @@
             "properties": {
               "username": {
                 "type": "string"
-              },
-              "email": {
-                "type": "string",
-                "nullable": true
               }
             },
             "required": ["username"]
