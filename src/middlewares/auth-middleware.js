@@ -10,7 +10,7 @@ export const authMiddleware = async (req, res, next) => {
 
         const token = authHeader.replace('Bearer ', '');
 
-        jwt.verify(token, process.env.JWT_SECRET_KEY || 'secret_key', (err, decoded) => {
+        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
             if (err) {
                 return res.status(401).json({ errors: "Unauthorized" });
             }

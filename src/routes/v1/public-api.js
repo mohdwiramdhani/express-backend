@@ -6,6 +6,9 @@ const publicRouter = new express.Router();
 
 publicRouter.post('/users', registerRateLimiter, userController.register);
 publicRouter.post('/users/login', loginRateLimiter, userController.login);
+
+publicRouter.post('/users/refresh-token', userController.refreshToken);
+
 publicRouter.get('/test', (req, res) => {
     res.send("Hello, world");
 });
