@@ -1,9 +1,24 @@
+// src/services/tokenService.js
 import jwt from "jsonwebtoken";
+import getEnvVariable from "../utils/env-utils.js";
+import { logger } from "../config/logging.js";
 
 export const generateAccessToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY || 'secret_key', { expiresIn: '15m' });
+    try {
+        const secretKey = getEnvVariable('JWT_SECRET_KEY');
+        return jwt.sign({ id: userId }, secretKey, { expiresIn: '15m' });
+    } catch (error) {
+        logger.error(`Error generating access token: ${error.message}`);
+        throw error;
+    }
 };
 
 export const generateRefreshToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET_KEY || 'refresh_secret_key', { expiresIn: '7d' });
+    try {
+        const refreshSecretKey = getEnvVariable('JWT_REFRESH_SECRET_KEY');
+        return jwt.sign({ id: userId }, refreshSecretKey, { expiresIn: '1d' });
+    } catch (error) {
+        logger.error(`Error generating refresh token: ${error.message}`);
+        throw error;
+    }
 };
