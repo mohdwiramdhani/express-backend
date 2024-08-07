@@ -29,7 +29,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Login",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -46,7 +46,7 @@
             }
           },
           "400": {
-            "description": "Validation Error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -59,7 +59,7 @@
             }
           },
           "401": {
-            "description": "Authentication Error",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -97,7 +97,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Retrieval",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -106,7 +106,9 @@
                 "example": {
                   "data": {
                     "username": "admin",
-                    "role": "admin"
+                    "role": "admin",
+                        "createdAt": "2024-08-08T00:12:50+08:00",
+                        "updatedAt": "2024-08-08T00:12:50+08:00"
                   },
                   "message": "User retrieved successfully"
                 }
@@ -150,7 +152,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Update",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -166,7 +168,7 @@
             }
           },
           "400": {
-            "description": "Validation Error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -212,7 +214,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Token Refresh",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -220,7 +222,8 @@
                 },
                 "example": {
                   "data": {
-                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzIyOTQ4NzQ1LCJleHAiOjE3MjI5NDk2NDV9.xZ5JLYCawlNNzoJ04X1d3GDv0IZywpLXSl-CsHQnsS8"
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMwNDYyMDh9.8psG6Znq4O4aN1W-VHf_Hdcr5jOGROhY4gd8i5siX5Y",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMxMzE3MDh9.dsZGg0ahOyInjNQksWI9B9AKhtubnfgVZtCr3D5uFU4"
                   },
                   "message": "Token refreshed successfully"
                 }
@@ -228,7 +231,7 @@
             }
           },
           "400": {
-            "description": "Validation Error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -236,6 +239,87 @@
                 },
                 "example": {
                   "errors": "\"refreshToken\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Refresh token missing"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Invalid refresh token"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/register": {
+      "post": {
+        "summary": "Create User Staff",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              },
+              "example": {
+                "username": "staff",
+                "password": "123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserResponse"
+                },
+                "example": {
+                  "data": {
+                    "username": "staff"
+                  },
+                  "message": "User created successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Username already exists"
                 }
               }
             }
@@ -258,23 +342,17 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "JWT token untuk autentikasi"
-      }
-    },
     "schemas": {
       "LoginRequest": {
         "type": "object",
         "properties": {
           "username": {
-            "type": "string"
+            "type": "string",
+            "example": "admin"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "example": "123"
           }
         },
         "required": ["username", "password"]
@@ -286,19 +364,20 @@
             "type": "object",
             "properties": {
               "accessToken": {
-                "type": "string"
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
               },
               "refreshToken": {
-                "type": "string"
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
               }
-            },
-            "required": ["accessToken", "refreshToken"]
+            }
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "Login successfully"
           }
-        },
-        "required": ["data", "message"]
+        }
       },
       "UserResponse": {
         "type": "object",
@@ -307,25 +386,35 @@
             "type": "object",
             "properties": {
               "username": {
-                "type": "string"
+                "type": "string",
+                "example": "admin"
               },
               "role": {
-                "type": "string"
-              }
-            },
-            "required": ["username", "role"]
+                "type": "string",
+                "example": "admin"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2024-08-07T10:00:00Z"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "2024-08-07T10:00:00Z"
+              }   
+            }
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "User retrieved successfully"
           }
-        },
-        "required": ["data", "message"]
+        }
       },
       "UpdateUserRequest": {
         "type": "object",
         "properties": {
           "username": {
-            "type": "string"
+            "type": "string",
+            "example": "mimin"
           }
         },
         "required": ["username"]
@@ -337,22 +426,23 @@
             "type": "object",
             "properties": {
               "username": {
-                "type": "string"
+                "type": "string",
+                "example": "mimin"
               }
-            },
-            "required": ["username"]
+            }
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "User updated successfully"
           }
-        },
-        "required": ["data", "message"]
+        }
       },
       "RefreshTokenRequest": {
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string"
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
           }
         },
         "required": ["refreshToken"]
@@ -364,25 +454,68 @@
             "type": "object",
             "properties": {
               "accessToken": {
-                "type": "string"
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMwNDYyMDh9.8psG6Znq4O4aN1W-VHf_Hdcr5jOGROhY4gd8i5siX5Y"
+              },
+              "refreshToken": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMxMzE3MDh9.dsZGg0ahOyInjNQksWI9B9AKhtubnfgVZtCr3D5uFU4"
               }
-            },
-            "required": ["accessToken"]
+            }
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "Token refreshed successfully"
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "staff"
+          },
+          "password": {
+            "type": "string",
+            "example": "123"
           }
         },
-        "required": ["data", "message"]
+        "required": ["username", "password"]
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "example": "staff"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "User created successfully"
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",
         "properties": {
           "errors": {
-            "type": "string"
+            "type": "string",
+            "example": "Username or password wrong"
           }
-        },
-        "required": ["errors"]
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
