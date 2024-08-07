@@ -109,7 +109,7 @@ const update = async (request) => {
 
     const existingUser = await prismaClient.user.findUnique({
         where: {
-            id: user.id // Gunakan ID untuk menemukan pengguna
+            id: user.id
         }
     });
 
@@ -118,9 +118,21 @@ const update = async (request) => {
     }
 
     const data = {};
+
     if (user.username) {
+        const usernameExists = await prismaClient.user.findUnique({
+            where: {
+                username: user.username
+            }
+        });
+
+        if (usernameExists && usernameExists.id !== existingUser.id) {
+            throw new ResponseError(400, "Username already exists");
+        }
+
         data.username = user.username;
     }
+
     if (user.password) {
         data.password = await bcrypt.hash(user.password, 10);
     }
@@ -133,8 +145,8 @@ const update = async (request) => {
         select: {
             username: true
         }
-    })
-}
+    });
+};
 
 const refreshToken = async (refreshToken) => {
     if (!refreshToken) throw new ResponseError(401, "Refresh token missing");
