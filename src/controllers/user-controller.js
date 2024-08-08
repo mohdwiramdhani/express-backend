@@ -10,7 +10,7 @@ const register = async (req, res, next) => {
     } catch (e) {
         next(e);
     }
-}
+};
 
 const registerStaff = async (req, res, next) => {
     try {
@@ -22,7 +22,7 @@ const registerStaff = async (req, res, next) => {
     } catch (e) {
         next(e);
     }
-}
+};
 
 const login = async (req, res, next) => {
     try {
@@ -34,7 +34,7 @@ const login = async (req, res, next) => {
     } catch (e) {
         next(e);
     }
-}
+};
 
 const get = async (req, res, next) => {
     try {
@@ -47,7 +47,7 @@ const get = async (req, res, next) => {
     } catch (e) {
         next(e);
     }
-}
+};
 
 const update = async (req, res, next) => {
     try {
@@ -60,11 +60,10 @@ const update = async (req, res, next) => {
             data: result,
             message: "User updated successfully"
         });
-        console.log("🚀 ~ update ~ request:", request)
     } catch (e) {
         next(e);
     }
-}
+};
 
 const refreshToken = async (req, res, next) => {
     try {
@@ -79,11 +78,23 @@ const refreshToken = async (req, res, next) => {
     }
 };
 
+const deleteStaff = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+
+        const result = await userService.deleteStaff(id);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+};
+
 export default {
     register,
     registerStaff,
     login,
     get,
     update,
-    refreshToken
-}
+    refreshToken,
+    deleteStaff
+};

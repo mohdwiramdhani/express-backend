@@ -44,7 +44,7 @@ const register = async (request) => {
         username: createdUser.username,
         role: createdUser.role.name
     };
-}
+};
 
 const registerStaff = async (request) => {
     const user = validate(registerUserValidation, request);
@@ -83,7 +83,7 @@ const registerStaff = async (request) => {
         username: createdUser.username,
         role: createdUser.role.name
     };
-}
+};
 
 const login = async (request) => {
     const loginRequest = validate(loginUserValidation, request);
@@ -140,15 +140,14 @@ const get = async (id) => {
         throw new ResponseError(404, "User not found");
     }
 
-    // Convert timestamps to UTC+8
-    const timezone = 'Asia/Singapore'; // Contoh zona waktu +8
+    const timezone = 'Asia/Singapore';
     return {
         username: user.username,
         role: user.role.name,
-        createdAt: moment(user.createdAt).tz(timezone).format(), // Format ISO string
-        updatedAt: moment(user.updatedAt).tz(timezone).format()  // Format ISO string
+        createdAt: moment(user.createdAt).tz(timezone).format(),
+        updatedAt: moment(user.updatedAt).tz(timezone).format()
     };
-}
+};
 
 const update = async (request) => {
     const user = validate(updateUserValidation, request);
@@ -208,11 +207,38 @@ const refreshToken = async (refreshToken) => {
     });
 };
 
+const deleteStaff = async (id) => {
+    id = validate(getUserValidation, id);
+
+    const existingUser = await prismaClient.user.findUnique({
+        where: {
+            id: id
+        }
+    });
+
+    if (!existingUser) {
+        throw new ResponseError(404, "User not found");
+    }
+
+    if (existingUser.roleId !== 2) {
+        throw new ResponseError(403, "Cannot delete non-staff user");
+    }
+
+    await prismaClient.user.delete({
+        where: {
+            id: id
+        }
+    });
+
+    return { message: "Staff deleted successfully" };
+};
+
 export default {
     register,
     registerStaff,
     login,
     get,
     update,
-    refreshToken
-}
+    refreshToken,
+    deleteStaff
+};
