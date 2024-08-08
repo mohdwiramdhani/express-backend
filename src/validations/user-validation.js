@@ -1,21 +1,21 @@
 import Joi from "joi";
 
 const registerUserValidation = Joi.object({
-    username: Joi.string().max(100).required(),
-    password: Joi.string().max(100).required()
+    username: Joi.string().alphanum().min(3).max(100).required(),
+    password: Joi.string().min(5).max(100).required()
 });
 
 const loginUserValidation = Joi.object({
-    username: Joi.string().max(100).required(),
-    password: Joi.string().max(100).required()
+    username: Joi.string().alphanum().min(3).max(100).required(),
+    password: Joi.string().min(5).max(100).required()
 });
 
 const getUserValidation = Joi.number().positive().required();
 
 const updateUserValidation = Joi.object({
     id: Joi.number().positive().required(),
-    username: Joi.string().max(100).required(),
-    password: Joi.string().max(100).optional(),
+    username: Joi.string().alphanum().min(3).max(100).required(),
+    password: Joi.string().min(5).max(100).optional()
 })
 
 export {
