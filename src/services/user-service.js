@@ -2,7 +2,7 @@ import { validate } from "../validations/validation.js";
 import { registerUserValidation, loginUserValidation, getUserValidation, updateUserValidation } from "../validations/user-validation.js";
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
-import { generateAccessToken, generateRefreshToken } from "../utils/token-utils.js";
+import token from "../utils/token-utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import moment from 'moment-timezone';
@@ -11,9 +11,7 @@ const register = async (request) => {
     const user = validate(registerUserValidation, request);
 
     const countUser = await prismaClient.user.count({
-        where: {
-            username: user.username
-        }
+        where: { username: user.username }
     });
 
     if (countUser > 0) {
@@ -21,38 +19,18 @@ const register = async (request) => {
     }
 
     user.password = await bcrypt.hash(user.password, 10);
+    user.roleId = 1;
 
-    const adminRoleId = 1;
-
-    const createdUser = await prismaClient.user.create({
-        data: {
-            username: user.username,
-            password: user.password,
-            roleId: adminRoleId
-        },
-        select: {
-            username: true,
-            role: {
-                select: {
-                    name: true
-                }
-            }
-        }
+    await prismaClient.user.create({
+        data: user
     });
-
-    return {
-        username: createdUser.username,
-        role: createdUser.role.name
-    };
 };
 
 const registerStaff = async (request) => {
     const user = validate(registerUserValidation, request);
 
     const countUser = await prismaClient.user.count({
-        where: {
-            username: user.username
-        }
+        where: { username: user.username }
     });
 
     if (countUser > 0) {
@@ -60,29 +38,11 @@ const registerStaff = async (request) => {
     }
 
     user.password = await bcrypt.hash(user.password, 10);
+    user.roleId = 2;
 
-    const staffRoleId = 2;
-
-    const createdUser = await prismaClient.user.create({
-        data: {
-            username: user.username,
-            password: user.password,
-            roleId: staffRoleId
-        },
-        select: {
-            username: true,
-            role: {
-                select: {
-                    name: true
-                }
-            }
-        }
+    await prismaClient.user.create({
+        data: user
     });
-
-    return {
-        username: createdUser.username,
-        role: createdUser.role.name
-    };
 };
 
 const login = async (request) => {
@@ -95,25 +55,31 @@ const login = async (request) => {
         select: {
             id: true,
             username: true,
-            password: true
+            password: true,
+            role: {
+                select: {
+                    name: true
+                }
+            }
         }
     });
 
     if (!user) {
-        throw new ResponseError(401, "Username or password wrong");
+        throw new ResponseError(401, "Username or password is incorrect");
     }
 
     const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
     if (!isPasswordValid) {
-        throw new ResponseError(401, "Username or password wrong");
+        throw new ResponseError(401, "Username or password is incorrect");
     }
 
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
+    const accessToken = token.generateAccessToken(user.id, user.role.name);
+    const refreshToken = token.generateRefreshToken(user.id, user.role.name);
 
     return {
         accessToken,
-        refreshToken
+        refreshToken,
+        role: user.role.name
     };
 };
 
@@ -182,29 +148,32 @@ const update = async (request) => {
         data.password = await bcrypt.hash(user.password, 10);
     }
 
-    return prismaClient.user.update({
-        where: {
-            id: user.id
-        },
-        data: data,
-        select: {
-            username: true
-        }
+    await prismaClient.user.update({
+        where: { id: user.id },
+        data
     });
 };
 
-const refreshToken = async (refreshToken) => {
-    if (!refreshToken) throw new ResponseError(401, "Refresh token missing");
+export const refreshToken = async (refreshToken) => {
+    if (!refreshToken) {
+        throw new ResponseError(401, "Refresh token missing");
+    }
 
-    return new Promise((resolve, reject) => {
-        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY, (err, decoded) => {
-            if (err) return reject(new ResponseError(403, "Invalid refresh token"));
-
-            const newAccessToken = generateAccessToken(decoded.id);
-            const newRefreshToken = generateRefreshToken(decoded.id);
-            resolve({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    try {
+        const decoded = await new Promise((resolve, reject) => {
+            jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY, (err, decoded) => {
+                if (err) return reject(err);
+                resolve(decoded);
+            });
         });
-    });
+
+        const newAccessToken = token.generateAccessToken(decoded.id, decoded.role);
+        const newRefreshToken = token.generateRefreshToken(decoded.id, decoded.role);
+
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    } catch (err) {
+        throw new ResponseError(403, "Invalid refresh token");
+    }
 };
 
 const deleteStaff = async (id) => {
@@ -220,8 +189,8 @@ const deleteStaff = async (id) => {
         throw new ResponseError(404, "User not found");
     }
 
-    if (existingUser.roleId !== 2) {
-        throw new ResponseError(403, "Cannot delete non-staff user");
+    if (existingUser.roleId === 1) {
+        throw new ResponseError(403, "Cannot delete admin user");
     }
 
     await prismaClient.user.delete({
@@ -229,8 +198,6 @@ const deleteStaff = async (id) => {
             id: id
         }
     });
-
-    return { message: "Staff deleted successfully" };
 };
 
 export default {
