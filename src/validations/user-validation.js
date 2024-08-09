@@ -14,7 +14,7 @@ const getUserValidation = Joi.number().positive().required();
 
 const updateUserValidation = Joi.object({
     id: Joi.number().positive().required(),
-    username: Joi.string().alphanum().min(3).max(100).required(),
+    username: Joi.string().alphanum().min(3).max(100).optional(),
     password: Joi.string().min(5).max(100).optional()
 })
 

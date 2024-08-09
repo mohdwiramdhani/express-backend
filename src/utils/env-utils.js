@@ -1,4 +1,3 @@
-// src/utils/envUtils.js
 const getEnvVariable = (variableName) => {
     const value = process.env[variableName];
     if (!value) {
