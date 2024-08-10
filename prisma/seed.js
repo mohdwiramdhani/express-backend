@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 const createRoles = async () => {
     const roles = [
         { id: 1, name: "admin" },
-        { id: 2, name: "staff" }
+        { id: 2, name: "staff" },
+        { id: 3, name: "member" }
     ];
 
     for (const role of roles) {
