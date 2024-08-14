@@ -23,6 +23,7 @@ const registerStaff = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const result = await userService.login(req.body);
+
         res.status(200).json({
             data: result,
             message: "Login successful"
@@ -36,6 +37,7 @@ const get = async (req, res, next) => {
     try {
         const id = req.user.id;
         const result = await userService.get(id);
+
         res.status(200).json({
             data: result,
             message: "User retrieved successfully"
@@ -63,6 +65,7 @@ const refreshToken = async (req, res, next) => {
     try {
         const { refreshToken } = req.body;
         const result = await userService.refreshToken(refreshToken);
+
         res.status(200).json({
             data: result,
             message: "Token refreshed successfully"

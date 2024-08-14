@@ -5,7 +5,8 @@ import { logger } from "../config/logging.js";
 const generateAccessToken = (userId, role) => {
     try {
         const secretKey = getEnvVariable('JWT_SECRET_KEY');
-        return jwt.sign({ id: userId, role: role }, secretKey, { expiresIn: '15m' });
+        const expiresIn = getEnvVariable('ACCESS_TOKEN_EXPIRATION');
+        return jwt.sign({ id: userId, role: role }, secretKey, { expiresIn });
     } catch (error) {
         logger.error(`Error generating access token: ${error.message}`);
         throw error;
@@ -15,7 +16,8 @@ const generateAccessToken = (userId, role) => {
 const generateRefreshToken = (userId, role) => {
     try {
         const refreshSecretKey = getEnvVariable('JWT_REFRESH_SECRET_KEY');
-        return jwt.sign({ id: userId, role: role }, refreshSecretKey, { expiresIn: '1d' });
+        const expiresIn = getEnvVariable('REFRESH_TOKEN_EXPIRATION');
+        return jwt.sign({ id: userId, role: role }, refreshSecretKey, { expiresIn });
     } catch (error) {
         logger.error(`Error generating refresh token: ${error.message}`);
         throw error;

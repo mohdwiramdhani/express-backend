@@ -87,9 +87,7 @@ const get = async (id) => {
     id = validate(getUserValidation, id);
 
     const user = await prismaClient.user.findUnique({
-        where: {
-            id: id
-        },
+        where: { id },
         select: {
             username: true,
             role: {
@@ -107,12 +105,11 @@ const get = async (id) => {
     }
 
     const timezone = 'Asia/Singapore';
-    return {
-        username: user.username,
-        role: user.role.name,
-        createdAt: moment(user.createdAt).tz(timezone).format(),
-        updatedAt: moment(user.updatedAt).tz(timezone).format()
-    };
+    user.role = user.role.name
+    user.createdAt = moment(user.createdAt).tz(timezone).format();
+    user.updatedAt = moment(user.updatedAt).tz(timezone).format();
+
+    return user;
 };
 
 const update = async (request) => {
