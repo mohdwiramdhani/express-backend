@@ -21,8 +21,15 @@ const register = async (request) => {
     user.password = await bcrypt.hash(user.password, 10);
     user.roleId = 1;
 
-    await prismaClient.user.create({
+    const newUser = await prismaClient.user.create({
         data: user
+    });
+
+    await prismaClient.profile.create({
+        data: {
+            ...request.profile,
+            userId: newUser.id
+        }
     });
 };
 
@@ -40,8 +47,15 @@ const registerStaff = async (request) => {
     user.password = await bcrypt.hash(user.password, 10);
     user.roleId = 2;
 
-    await prismaClient.user.create({
+    const newUser = await prismaClient.user.create({
         data: user
+    });
+
+    await prismaClient.profile.create({
+        data: {
+            ...request.profile,
+            userId: newUser.id
+        }
     });
 };
 
