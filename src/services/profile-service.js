@@ -1,30 +1,8 @@
 import { validate } from "../validations/validation.js";
-import { createProfileValidation, getProfileValidation, updateProfileValidation } from "../validations/profile-validation.js";
+import { getProfileValidation, updateProfileValidation } from "../validations/profile-validation.js";
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import moment from 'moment-timezone';
-
-const create = async (userId, request) => {
-    const profile = validate(createProfileValidation, request);
-    profile.userId = userId;
-
-    const [existingProfileByUserId, countNIK] = await Promise.all([
-        prismaClient.profile.findUnique({ where: { userId: profile.userId } }),
-        profile.nik ? prismaClient.profile.count({ where: { nik: profile.nik } }) : Promise.resolve(0)
-    ]);
-
-    if (existingProfileByUserId) {
-        throw new ResponseError(400, "Profile already exists");
-    }
-
-    if (countNIK > 0) {
-        throw new ResponseError(400, "NIK already exists");
-    }
-
-    await prismaClient.profile.create({
-        data: profile
-    });
-};
 
 const get = async (userId) => {
     userId = validate(getProfileValidation, userId);
@@ -74,7 +52,6 @@ const update = async (userId, request) => {
 };
 
 export default {
-    create,
     get,
     update
 };
