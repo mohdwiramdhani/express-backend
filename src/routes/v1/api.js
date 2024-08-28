@@ -14,7 +14,6 @@ userRouter.patch('/users/current', userController.update);
 userRouter.delete('/users/:id', adminMiddleware, userController.deleteStaff);
 
 // Profile API
-userRouter.post('/profile', profileController.create);
 userRouter.get('/profile/current', profileController.get);
 userRouter.patch('/profile/current', profileController.update);
 
