@@ -22,7 +22,7 @@
               },
               "example": {
                 "username": "admin",
-                "password": "123"
+                "password": "12345"
               }
             }
           }
@@ -38,7 +38,8 @@
                 "example": {
                   "data": {
                     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE",
-                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE",
+                    "role": "admin"
                   },
                   "message": "Login successfully"
                 }
@@ -107,8 +108,8 @@
                   "data": {
                     "username": "admin",
                     "role": "admin",
-                        "createdAt": "2024-08-08T00:12:50+08:00",
-                        "updatedAt": "2024-08-08T00:12:50+08:00"
+                    "createdAt": "2024-08-08T20:36:32+08:00",
+                    "updatedAt": "2024-08-09T20:54:09+08:00"
                   },
                   "message": "User retrieved successfully"
                 }
@@ -159,9 +160,6 @@
                   "$ref": "#/components/schemas/UpdateUserResponse"
                 },
                 "example": {
-                  "data": {
-                    "username": "mimin"
-                  },
                   "message": "User updated successfully"
                 }
               }
@@ -222,8 +220,8 @@
                 },
                 "example": {
                   "data": {
-                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMwNDYyMDh9.8psG6Znq4O4aN1W-VHf_Hdcr5jOGROhY4gd8i5siX5Y",
-                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMxMzE3MDh9.dsZGg0ahOyInjNQksWI9B9AKhtubnfgVZtCr3D5uFU4"
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcyMzI4NTM1MywiZXhwIjoxNzIzMjg2MjUzfQ.Gu2KjLxTuWSCzCV5GRCxZXx5P-QF2qusuprr9OpK8EI",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcyMzI4NTM1MywiZXhwIjoxNzIzMjg2MjUzfQ.Gu2KjLxTuWSCzCV5GRCxZXx5P-QF2qusuprr9OpK8EI"
                   },
                   "message": "Token refreshed successfully"
                 }
@@ -274,7 +272,7 @@
     },
     "/api/v1/users/register": {
       "post": {
-        "summary": "Create User Staff",
+        "summary": "Create User Staff API",
         "security": [
           {
             "bearerAuth": []
@@ -285,11 +283,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserRequest"
+                "$ref": "#/components/schemas/CreateUserStaffRequest"
               },
               "example": {
                 "username": "staff",
-                "password": "123"
+                "password": "12345"
               }
             }
           }
@@ -300,13 +298,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateUserResponse"
+                  "$ref": "#/components/schemas/CreateUserStaffResponse"
                 },
                 "example": {
-                  "data": {
-                    "username": "staff"
-                  },
-                  "message": "User created successfully"
+                    "message": "User registered successfully"
                 }
               }
             }
@@ -336,6 +331,32 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Forbidden"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "errors": "Too many requests, please try again later."
+                }
+              }
+            }
           }
         }
       }
@@ -347,12 +368,10 @@
         "type": "object",
         "properties": {
           "username": {
-            "type": "string",
-            "example": "admin"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "example": "123"
+            "type": "string"
           }
         },
         "required": ["username", "password"]
@@ -364,18 +383,18 @@
             "type": "object",
             "properties": {
               "accessToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+                "type": "string"
               },
               "refreshToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
               }
             }
           },
           "message": {
-            "type": "string",
-            "example": "Login successfully"
+            "type": "string"
           }
         }
       },
@@ -386,26 +405,20 @@
             "type": "object",
             "properties": {
               "username": {
-                "type": "string",
-                "example": "admin"
-              },
-              "role": {
-                "type": "string",
-                "example": "admin"
+                "type": "string"
               },
               "createdAt": {
                 "type": "string",
-                "example": "2024-08-07T10:00:00Z"
+                "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "example": "2024-08-07T10:00:00Z"
-              }   
+                "format": "date-time"
+              }
             }
           },
           "message": {
-            "type": "string",
-            "example": "User retrieved successfully"
+            "type": "string"
           }
         }
       },
@@ -413,27 +426,15 @@
         "type": "object",
         "properties": {
           "username": {
-            "type": "string",
-            "example": "mimin"
+            "type": "string"
           }
-        },
-        "required": ["username"]
+        }
       },
       "UpdateUserResponse": {
         "type": "object",
         "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "example": "mimin"
-              }
-            }
-          },
           "message": {
-            "type": "string",
-            "example": "User updated successfully"
+            "type": "string"
           }
         }
       },
@@ -441,8 +442,7 @@
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzIyOTM3MDgxLCJleHAiOjE3MjM4MDEwODF9.d0PvbnR45JwzerhQz-oUjib-gj6zTvfUC227-dEfzXE"
+            "type": "string"
           }
         },
         "required": ["refreshToken"]
@@ -454,50 +454,35 @@
             "type": "object",
             "properties": {
               "accessToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMwNDYyMDh9.8psG6Znq4O4aN1W-VHf_Hdcr5jOGROhY4gd8i5siX5Y"
+                "type": "string"
               },
               "refreshToken": {
-                "type": "string",
-                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIzMDQ1MzA4LCJleHAiOjE3MjMxMzE3MDh9.dsZGg0ahOyInjNQksWI9B9AKhtubnfgVZtCr3D5uFU4"
+                "type": "string"
               }
             }
           },
           "message": {
-            "type": "string",
-            "example": "Token refreshed successfully"
+            "type": "string"
           }
         }
       },
-      "CreateUserRequest": {
+      "CreateUserStaffRequest": {
         "type": "object",
         "properties": {
           "username": {
-            "type": "string",
-            "example": "staff"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "example": "123"
+            "type": "string"
           }
         },
         "required": ["username", "password"]
       },
-      "CreateUserResponse": {
+      "CreateUserStaffResponse": {
         "type": "object",
         "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "example": "staff"
-              }
-            }
-          },
           "message": {
-            "type": "string",
-            "example": "User created successfully"
+            "type": "string"
           }
         }
       },
@@ -505,8 +490,7 @@
         "type": "object",
         "properties": {
           "errors": {
-            "type": "string",
-            "example": "Username or password wrong"
+            "type": "string"
           }
         }
       }
