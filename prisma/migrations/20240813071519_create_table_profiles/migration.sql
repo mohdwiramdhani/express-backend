@@ -5,7 +5,7 @@ CREATE TABLE `profiles` (
     `nik` VARCHAR(16) NULL,
     `phoneNumber` VARCHAR(20) NULL,
     `address` TEXT NULL,
-    `dateOfBirth` DATETIME(3) NULL,
+    `dateOfBirth` DATE NULL,
     `userId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

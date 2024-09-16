@@ -28,6 +28,10 @@ const get = async (userId) => {
     profile.createdAt = moment(profile.createdAt).tz(timezone).format();
     profile.updatedAt = moment(profile.updatedAt).tz(timezone).format();
 
+    if (profile.dateOfBirth) {
+        profile.dateOfBirth = moment(profile.dateOfBirth).format('YYYY-MM-DD');
+    }
+
     return profile;
 };
 
