@@ -12,7 +12,7 @@ CREATE TABLE `members` (
 
     UNIQUE INDEX `members_username_key`(`username`),
     PRIMARY KEY (`id`)
-DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE InnoDB;
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE InnoDB;
 
 -- AddForeignKey
 ALTER TABLE `members` ADD CONSTRAINT `members_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `roles`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

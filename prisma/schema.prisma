@@ -54,8 +54,8 @@ model Member {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  role           Role           @relation(fields: [roleId], references: [id])
-  member_profile MemberProfile?
+  role          Role           @relation(fields: [roleId], references: [id])
+  memberProfile MemberProfile?
 
   @@map("members")
 }
@@ -67,6 +67,7 @@ model MemberProfile {
   phoneNumber String?   @db.VarChar(20)
   address     String?   @db.Text
   dateOfBirth DateTime?
+  photoUrl    String?   @db.VarChar(255)
   memberId    Int       @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now()) @updatedAt

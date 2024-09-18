@@ -6,6 +6,7 @@ CREATE TABLE `member_profiles` (
     `phoneNumber` VARCHAR(20) NULL,
     `address` TEXT NULL,
     `dateOfBirth` DATETIME(3) NULL,
+    `photoUrl` VARCHAR(255) NULL,
     `memberId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -13,7 +14,7 @@ CREATE TABLE `member_profiles` (
     UNIQUE INDEX `member_profiles_nik_key`(`nik`),
     UNIQUE INDEX `member_profiles_memberId_key`(`memberId`),
     PRIMARY KEY (`id`)
-DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE InnoDB;
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE InnoDB;
 
 -- AddForeignKey
 ALTER TABLE `member_profiles` ADD CONSTRAINT `member_profiles_memberId_fkey` FOREIGN KEY (`memberId`) REFERENCES `members`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

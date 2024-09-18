@@ -13,15 +13,11 @@ const createRoles = async () => {
 
     for (const role of roles) {
         const countRole = await prisma.role.count({
-            where: {
-                id: role.id
-            }
+            where: { id: role.id }
         });
 
         if (countRole === 0) {
-            await prisma.role.create({
-                data: role
-            });
+            await prisma.role.create({ data: role });
             logger.info(`Role ${role.name} created successfully.`);
         } else {
             logger.info(`Role ${role.name} already exists.`);
@@ -29,44 +25,80 @@ const createRoles = async () => {
     }
 };
 
-const createAdminUser = async () => {
-    const adminUsername = "admin";
-    const adminPassword = "12345";
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+const createUser = async (username, password, roleId) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const countAdmin = await prisma.user.count({
-        where: {
-            username: adminUsername
-        }
+    const countUser = await prisma.user.count({
+        where: { username }
     });
 
-    if (countAdmin === 0) {
-        const adminUser = await prisma.user.create({
+    if (countUser === 0) {
+        const user = await prisma.user.create({
             data: {
-                username: adminUsername,
+                username,
                 password: hashedPassword,
-                roleId: 1,
+                roleId
             }
         });
 
         await prisma.profile.create({
-            data: {
-                userId: adminUser.id,
-            }
+            data: { userId: user.id }
         });
 
-        logger.info(`Admin user created successfully with username: ${adminUsername}`);
+        logger.info(`${roleId === 1 ? 'Admin' : 'Staff'} user created successfully with username: ${username}`);
     } else {
-        logger.info(`Admin user with username ${adminUsername} already exists.`);
+        logger.info(`${roleId === 1 ? 'Admin' : 'Staff'} user with username ${username} already exists.`);
     }
 };
 
-createRoles()
-    .then(createAdminUser)
-    .catch((e) => {
-        logger.error('Error creating roles or admin user:', e);
-        prisma.$disconnect();
-    })
-    .finally(() => {
-        prisma.$disconnect();
+const createMember = async (fullName, nik, phoneNumber, address, dateOfBirth) => {
+
+    const usernamePassword = nik;
+
+    const hashedPassword = await bcrypt.hash(usernamePassword, 10);
+
+    const countMember = await prisma.member.count({
+        where: { username: usernamePassword }
     });
+
+    if (countMember === 0) {
+        const member = await prisma.member.create({
+            data: {
+                username: usernamePassword,
+                password: hashedPassword,
+                roleId: 3
+            }
+        });
+
+        await prisma.memberProfile.create({
+            data: {
+                fullName,
+                nik,
+                phoneNumber,
+                address,
+                dateOfBirth,
+                memberId: member.id
+            }
+        });
+
+        logger.info(`Member created successfully with username: ${usernamePassword}`);
+    } else {
+        logger.info(`Member with username ${usernamePassword} already exists.`);
+    }
+};
+
+const seed = async () => {
+    try {
+        await createRoles();
+        await createUser("admin", "12345", 1);
+        await createUser("staff", "12345", 2);
+        await createMember("Uzumaki Naruto", "7204070203880002", "08123456789", "Jl. Lama", new Date("1988-03-02"));
+        await createMember("Jane Smith", "7204060101980001", "08234567890", "Jl. Baru", new Date("1998-01-01"));
+    } catch (error) {
+        logger.error('Error during seeding process:', error);
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+seed();
