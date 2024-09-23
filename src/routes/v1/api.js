@@ -28,6 +28,7 @@ userRouter.delete('/work-unit/:id', workUnitController.remove);
 
 // Member API
 userRouter.post('/members/register', adminMiddleware, memberController.register);
+userRouter.get('/members/:id', memberController.get);
 
 export {
     userRouter

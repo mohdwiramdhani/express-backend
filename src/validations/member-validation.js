@@ -10,6 +10,9 @@ const registerMemberValidation = Joi.object({
     workUnitId: Joi.number().integer().required()
 });
 
+const getMemberValidation = Joi.number().positive().required();
+
 export {
     registerMemberValidation,
+    getMemberValidation
 }
