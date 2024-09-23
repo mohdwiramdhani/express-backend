@@ -2,7 +2,7 @@ import { validate } from "../validations/validation.js";
 import { getProfileValidation, updateProfileValidation } from "../validations/profile-validation.js";
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
-import moment from 'moment-timezone';
+import { formatDate, formatTimezone } from "../helpers/date-helper.js";
 
 const get = async (userId) => {
     userId = validate(getProfileValidation, userId);
@@ -24,12 +24,11 @@ const get = async (userId) => {
         throw new ResponseError(404, "Profile not found");
     }
 
-    const timezone = 'Asia/Singapore';
-    profile.createdAt = moment(profile.createdAt).tz(timezone).format();
-    profile.updatedAt = moment(profile.updatedAt).tz(timezone).format();
+    profile.createdAt = formatTimezone(profile.createdAt)
+    profile.updatedAt = formatTimezone(profile.updatedAt)
 
     if (profile.dateOfBirth) {
-        profile.dateOfBirth = moment(profile.dateOfBirth).format('YYYY-MM-DD');
+        profile.dateOfBirth = formatDate(profile.dateOfBirth);
     }
 
     return profile;

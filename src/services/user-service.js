@@ -5,7 +5,7 @@ import { ResponseError } from "../errors/response-error.js";
 import token from "../utils/token-utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import moment from 'moment-timezone';
+import { formatDate, formatTimezone } from "../helpers/date-helper.js";
 
 const register = async (request) => {
     const user = validate(registerUserValidation, request);
@@ -118,10 +118,9 @@ const get = async (id) => {
         throw new ResponseError(404, "User not found");
     }
 
-    const timezone = 'Asia/Singapore';
     user.role = user.role.name
-    user.createdAt = moment(user.createdAt).tz(timezone).format();
-    user.updatedAt = moment(user.updatedAt).tz(timezone).format();
+    user.createdAt = formatTimezone(user.createdAt);
+    user.updatedAt = formatTimezone(user.updatedAt);
 
     return user;
 };
