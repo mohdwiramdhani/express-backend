@@ -187,7 +187,7 @@ export const refreshToken = async (refreshToken) => {
     }
 };
 
-const deleteStaff = async (id) => {
+const removeStaff = async (id) => {
     id = validate(getUserValidation, id);
 
     const existingUser = await prismaClient.user.findUnique({
@@ -218,5 +218,5 @@ export default {
     get,
     update,
     refreshToken,
-    deleteStaff
+    removeStaff
 };

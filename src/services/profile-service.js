@@ -36,7 +36,7 @@ const get = async (userId) => {
 };
 
 const update = async (userId, request) => {
-    const updatedProfile = validate(updateProfileValidation, request);
+    const profile = validate(updateProfileValidation, request);
 
     const existingProfile = await prismaClient.profile.findUnique({ where: { userId } });
 
@@ -44,15 +44,15 @@ const update = async (userId, request) => {
         throw new ResponseError(404, "Profile not found");
     }
 
-    if (updatedProfile.nik && updatedProfile.nik !== existingProfile.nik) {
-        const existingProfileByNik = await prismaClient.profile.findUnique({ where: { nik: updatedProfile.nik } });
+    if (profile.nik && profile.nik !== existingProfile.nik) {
+        const existingProfileByNik = await prismaClient.profile.findUnique({ where: { nik: profile.nik } });
 
         if (existingProfileByNik) {
             throw new ResponseError(400, "NIK already exists");
         }
     }
 
-    await prismaClient.profile.update({ where: { userId }, data: updatedProfile });
+    await prismaClient.profile.update({ where: { userId }, data: profile });
 };
 
 export default {

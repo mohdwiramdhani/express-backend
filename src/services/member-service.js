@@ -17,6 +17,14 @@ const register = async (request) => {
         throw new ResponseError(400, "NIK already exists");
     }
 
+    const workUnit = await prismaClient.workUnit.findUnique({
+        where: { id: member.workUnitId }
+    });
+
+    if (!workUnit) {
+        throw new ResponseError(400, "Work Unit not found");
+    }
+
     const hashedPassword = await bcrypt.hash(usernamePassword, 10);
 
     const newMember = await prismaClient.member.create({
@@ -34,6 +42,7 @@ const register = async (request) => {
             phoneNumber: member.phoneNumber,
             address: member.address,
             dateOfBirth: member.dateOfBirth,
+            workUnitId: member.workUnitId,
             memberId: newMember.id
         }
     });

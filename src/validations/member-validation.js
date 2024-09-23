@@ -7,8 +7,7 @@ const registerMemberValidation = Joi.object({
     address: Joi.string().allow(null, ''),
     dateOfBirth: Joi.date().allow(null, ''),
     photoUrl: Joi.string().uri().allow(null, ''),
-    // username: Joi.string().alphanum().min(3).max(100).required(),
-    // password: Joi.string().min(5).max(100).required()
+    workUnitId: Joi.number().integer().required()
 });
 
 export {

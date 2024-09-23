@@ -75,11 +75,11 @@ const refreshToken = async (req, res, next) => {
     }
 };
 
-const deleteStaff = async (req, res, next) => {
+const removeStaff = async (req, res, next) => {
     try {
         const id = req.params.id;
 
-        await userService.deleteStaff(id);
+        await userService.removeStaff(id);
         res.status(200).json({
             message: "Staff deleted successfully"
         });
@@ -95,5 +95,5 @@ export default {
     get,
     update,
     refreshToken,
-    deleteStaff
+    removeStaff
 };
