@@ -88,11 +88,11 @@ const login = async (request) => {
     }
 
     const accessToken = token.generateAccessToken(user.id, user.role.name);
-    const refreshToken = token.generateRefreshToken(user.id, user.role.name);
+    // const refreshToken = token.generateRefreshToken(user.id, user.role.name);
 
     return {
         accessToken,
-        refreshToken,
+        // refreshToken,
         role: user.role.name
     };
 };
@@ -164,27 +164,28 @@ const update = async (request) => {
     });
 };
 
-export const refreshToken = async (refreshToken) => {
-    if (!refreshToken) {
-        throw new ResponseError(401, "Refresh token missing");
-    }
 
-    try {
-        const decoded = await new Promise((resolve, reject) => {
-            jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY, (err, decoded) => {
-                if (err) return reject(err);
-                resolve(decoded);
-            });
-        });
+// export const refreshToken = async (refreshToken) => {
+//     if (!refreshToken) {
+//         throw new ResponseError(401, "Refresh token missing");
+//     }
 
-        const newAccessToken = token.generateAccessToken(decoded.id, decoded.role);
-        const newRefreshToken = token.generateRefreshToken(decoded.id, decoded.role);
+//     try {
+//         const decoded = await new Promise((resolve, reject) => {
+//             jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY, (err, decoded) => {
+//                 if (err) return reject(err);
+//                 resolve(decoded);
+//             });
+//         });
 
-        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
-    } catch (err) {
-        throw new ResponseError(403, "Invalid refresh token");
-    }
-};
+//         const newAccessToken = token.generateAccessToken(decoded.id, decoded.role);
+//         const newRefreshToken = token.generateRefreshToken(decoded.id, decoded.role);
+
+//         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+//     } catch (err) {
+//         throw new ResponseError(403, "Invalid refresh token");
+//     }
+// };
 
 const removeStaff = async (id) => {
     id = validate(getUserValidation, id);
@@ -216,6 +217,6 @@ export default {
     login,
     get,
     update,
-    refreshToken,
+    // refreshToken,
     removeStaff
 };

@@ -13,18 +13,18 @@ const generateAccessToken = (userId, role) => {
     }
 };
 
-const generateRefreshToken = (userId, role) => {
-    try {
-        const refreshSecretKey = getEnvVariable('JWT_REFRESH_SECRET_KEY');
-        const expiresIn = getEnvVariable('REFRESH_TOKEN_EXPIRATION');
-        return jwt.sign({ id: userId, role: role }, refreshSecretKey, { expiresIn });
-    } catch (error) {
-        logger.error(`Error generating refresh token: ${error.message}`);
-        throw error;
-    }
-};
+// const generateRefreshToken = (userId, role) => {
+//     try {
+//         const refreshSecretKey = getEnvVariable('JWT_REFRESH_SECRET_KEY');
+//         const expiresIn = getEnvVariable('REFRESH_TOKEN_EXPIRATION');
+//         return jwt.sign({ id: userId, role: role }, refreshSecretKey, { expiresIn });
+//     } catch (error) {
+//         logger.error(`Error generating refresh token: ${error.message}`);
+//         throw error;
+//     }
+// };
 
 export default {
     generateAccessToken,
-    generateRefreshToken
+    // generateRefreshToken
 };
