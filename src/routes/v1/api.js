@@ -27,8 +27,11 @@ userRouter.patch('/work-unit/:id', workUnitController.update);
 userRouter.delete('/work-unit/:id', workUnitController.remove);
 
 // Member API
-userRouter.post('/members/register', adminMiddleware, memberController.register);
+userRouter.post('/members/register', memberController.register);
 userRouter.get('/members/:id', memberController.get);
+userRouter.get('/members', memberController.getAll);
+userRouter.patch('/members/:id', memberController.update);
+userRouter.delete('/members/:id', memberController.remove);
 
 export {
     userRouter
