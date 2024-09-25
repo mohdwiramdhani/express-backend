@@ -81,11 +81,11 @@ const get = async (id) => {
         throw new ResponseError(404, "Member not found");
     }
 
-    const { username, role, memberProfile } = member;
+    const { username, role: { name: role }, memberProfile } = member;
 
     const formattedMember = {
         username,
-        role: role.name,
+        role,
         fullName: memberProfile.fullName,
         nik: memberProfile.nik,
         phoneNumber: memberProfile.phoneNumber,
@@ -100,7 +100,103 @@ const get = async (id) => {
 
 };
 
+const getAll = async () => {
+    const members = await prismaClient.member.findMany({
+        select: {
+            username: true,
+            role: {
+                select: {
+                    name: true
+                }
+            },
+            memberProfile: {
+                select: {
+                    fullName: true,
+                    nik: true,
+                    phoneNumber: true,
+                    address: true,
+                    dateOfBirth: true,
+                    photoUrl: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            }
+        }
+    });
+
+    return members.map(member => ({
+        username: member.username,
+        role: member.role.name,
+        fullName: member.memberProfile.fullName,
+        nik: member.memberProfile.nik,
+        phoneNumber: member.memberProfile.phoneNumber,
+        address: member.memberProfile.address,
+        dateOfBirth: formatDate(member.memberProfile.dateOfBirth),
+        photoUrl: member.memberProfile.photoUrl,
+        createdAt: formatTimezone(member.memberProfile.createdAt),
+        updatedAt: formatTimezone(member.memberProfile.updatedAt)
+    }));
+};
+
+const update = async (id, request) => {
+    id = validate(getMemberValidation, id);
+
+    const member = await prismaClient.member.findUnique({
+        where: { id }
+    });
+
+    if (!member) {
+        throw new ResponseError(404, "Member not found");
+    }
+
+    const updatedProfileData = {
+        fullName: request.fullName,
+        nik: request.nik,
+        phoneNumber: request.phoneNumber,
+        address: request.address,
+        dateOfBirth: request.dateOfBirth,
+        photoUrl: request.photoUrl,
+        workUnitId: request.workUnitId
+    };
+
+    await prismaClient.memberProfile.update({
+        where: { memberId: id },
+        data: updatedProfileData
+    });
+
+    return {
+        message: "Member updated successfully"
+    };
+};
+
+const remove = async (id) => {
+    id = validate(getMemberValidation, id);
+
+    const member = await prismaClient.member.findUnique({
+        where: { id }
+    });
+
+    if (!member) {
+        throw new ResponseError(404, "Member not found");
+    }
+
+    await prismaClient.memberProfile.delete({
+        where: { memberId: id }
+    });
+
+    await prismaClient.member.delete({
+        where: { id }
+    });
+
+    return {
+        message: "Member deleted successfully"
+    };
+};
+
 export default {
     register,
-    get
+    get,
+    getAll,
+    update,
+    remove
 };
