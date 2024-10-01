@@ -6,14 +6,14 @@ export const authMiddleware = (req, res, next) => {
         const authHeader = req.header('Authorization');
 
         if (!authHeader) {
-            return res.status(401).json({ errors: "Unauthorized" });
+            return res.status(401).json({ errors: "Akses ditolak" });
         }
 
         const token = authHeader.replace('Bearer ', '');
 
         jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
             if (err) {
-                return res.status(401).json({ errors: "Unauthorized" });
+                return res.status(401).json({ errors: "Akses ditolak" });
             }
 
             req.user = { id: decoded.id, role: decoded.role };
@@ -22,6 +22,6 @@ export const authMiddleware = (req, res, next) => {
         });
     } catch (error) {
         logger.error(`Auth Middleware Error: ${error.message}`);
-        return res.status(500).json({ errors: "Internal Server Error" });
+        return res.status(500).json({ errors: "Terjadi kesalahan pada server" });
     }
 };

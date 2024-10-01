@@ -21,7 +21,7 @@ const get = async (userId) => {
     });
 
     if (!profile) {
-        throw new ResponseError(404, "Profile not found");
+        throw new ResponseError(404, "Profil tidak ditemukan");
     }
 
     profile.createdAt = formatTimezone(profile.createdAt)
@@ -40,14 +40,14 @@ const update = async (userId, request) => {
     const existingProfile = await prismaClient.profile.findUnique({ where: { userId } });
 
     if (!existingProfile) {
-        throw new ResponseError(404, "Profile not found");
+        throw new ResponseError(404, "Profil tidak ditemukan");
     }
 
     if (profile.nik && profile.nik !== existingProfile.nik) {
         const existingProfileByNik = await prismaClient.profile.findUnique({ where: { nik: profile.nik } });
 
         if (existingProfileByNik) {
-            throw new ResponseError(400, "NIK already exists");
+            throw new ResponseError(400, "NIK sudah digunakan");
         }
     }
 

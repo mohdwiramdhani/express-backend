@@ -3,9 +3,8 @@ import { registerUserValidation, loginUserValidation, getUserValidation, updateU
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import token from "../utils/token-utils.js";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { formatDate, formatTimezone } from "../helpers/date-helper.js";
+import { formatTimezone } from "../helpers/date-helper.js";
 
 const register = async (request) => {
     const user = validate(registerUserValidation, request);
@@ -15,7 +14,7 @@ const register = async (request) => {
     });
 
     if (countUser > 0) {
-        throw new ResponseError(400, "Username already exists");
+        throw new ResponseError(400, "Username sudah digunakan");
     }
 
     user.password = await bcrypt.hash(user.password, 10);
@@ -41,7 +40,7 @@ const registerStaff = async (request) => {
     });
 
     if (countUser > 0) {
-        throw new ResponseError(400, "Username already exists");
+        throw new ResponseError(400, "Username sudah digunakan");
     }
 
     user.password = await bcrypt.hash(user.password, 10);
@@ -79,12 +78,12 @@ const login = async (request) => {
     });
 
     if (!user) {
-        throw new ResponseError(401, "Username or password is incorrect");
+        throw new ResponseError(401, "Username atau password salah");
     }
 
     const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
     if (!isPasswordValid) {
-        throw new ResponseError(401, "Username or password is incorrect");
+        throw new ResponseError(401, "Username atau password salah");
     }
 
     const accessToken = token.generateAccessToken(user.id, user.role.name);
@@ -115,7 +114,7 @@ const get = async (id) => {
     });
 
     if (!user) {
-        throw new ResponseError(404, "User not found");
+        throw new ResponseError(404, "Pengguna tidak ditemukan");
     }
 
     user.role = user.role.name
@@ -135,7 +134,7 @@ const update = async (request) => {
     });
 
     if (!existingUser) {
-        throw new ResponseError(404, "User not found");
+        throw new ResponseError(404, "Pengguna tidak ditemukan");
     }
 
     const data = {};
@@ -148,7 +147,7 @@ const update = async (request) => {
         });
 
         if (usernameExists && usernameExists.id !== existingUser.id) {
-            throw new ResponseError(400, "Username already exists");
+            throw new ResponseError(400, "Username sudah digunakan");
         }
 
         data.username = user.username;
@@ -197,11 +196,11 @@ const removeStaff = async (id) => {
     });
 
     if (!existingUser) {
-        throw new ResponseError(404, "User not found");
+        throw new ResponseError(404, "Pengguna tidak ditemukan");
     }
 
     if (existingUser.roleId === 1) {
-        throw new ResponseError(403, "Cannot delete admin user");
+        throw new ResponseError(403, "Pengguna dengan peran admin tidak dapat dihapus");
     }
 
     await prismaClient.user.delete({

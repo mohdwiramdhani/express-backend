@@ -4,7 +4,7 @@ const register = async (req, res, next) => {
     try {
         await memberService.register(req.body);
 
-        res.status(201).json({ message: "Member registered successfully" });
+        res.status(201).json({ message: "Anggota berhasil didaftarkan" });
     } catch (e) {
         next(e);
     }
@@ -13,12 +13,11 @@ const register = async (req, res, next) => {
 const get = async (req, res, next) => {
     try {
         const id = req.params.id;
-
         const result = await memberService.get(id);
 
         res.status(200).json({
             data: result,
-            message: "Member retrieved successfully"
+            message: "Anggota berhasil ditemukan"
         });
     } catch (e) {
         next(e);
@@ -31,7 +30,7 @@ const getAll = async (req, res, next) => {
 
         res.status(200).json({
             data: result,
-            message: "All Members retrieved successfully"
+            message: "Semua anggota berhasil ditemukan"
         });
     } catch (e) {
         next(e);
@@ -41,10 +40,10 @@ const getAll = async (req, res, next) => {
 const update = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const result = await memberService.update(id, req.body);
+        await memberService.update(id, req.body);
 
         res.status(200).json({
-            message: result.message
+            message: "Anggota berhasil diperbarui"
         });
     } catch (e) {
         next(e);
@@ -54,10 +53,10 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const result = await memberService.remove(id);
+        await memberService.remove(id);
 
         res.status(200).json({
-            message: result.message
+            message: "Anggota berhasil dihapus"
         });
     } catch (e) {
         next(e);

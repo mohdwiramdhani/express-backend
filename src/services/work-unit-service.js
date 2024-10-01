@@ -11,7 +11,7 @@ const create = async (request) => {
     });
 
     if (countWorkUnit > 0) {
-        throw new ResponseError(400, "Name already exists");
+        throw new ResponseError(400, "Nama sudah digunakan");
     }
 
     await prismaClient.workUnit.create({
@@ -30,7 +30,7 @@ const get = async (id) => {
     });
 
     if (!workUnit) {
-        throw new ResponseError(404, "Work unit not found");
+        throw new ResponseError(404, "Unit kerja tidak ditemukan");
     }
 
     return workUnit;
@@ -60,7 +60,7 @@ const update = async (id, request) => {
     });
 
     if (existingWorkUnit) {
-        throw new ResponseError(400, "Name already exists");
+        throw new ResponseError(400, "Nama sudah digunakan");
     }
 
     const targetWorkUnit = await prismaClient.workUnit.findUnique({
@@ -68,7 +68,7 @@ const update = async (id, request) => {
     });
 
     if (!targetWorkUnit) {
-        throw new ResponseError(404, "Work unit not found");
+        throw new ResponseError(404, "Unit kerja tidak ditemukan");
     }
 
     await prismaClient.workUnit.update({
@@ -87,7 +87,7 @@ const remove = async (id) => {
     });
 
     if (!existingWorkUnit) {
-        throw new ResponseError(404, "Work unit not found");
+        throw new ResponseError(404, "Unit kerja tidak ditemukan");
     }
 
     const relatedMemberCount = await prismaClient.memberProfile.count({
@@ -95,7 +95,7 @@ const remove = async (id) => {
     });
 
     if (relatedMemberCount > 0) {
-        throw new ResponseError(400, `Cannot delete work unit with ${relatedMemberCount} member(s) related`);
+        throw new ResponseError(400, `Tidak dapat menghapus unit kerja dengan ${relatedMemberCount} anggota yang terkait`);
     }
 
     await prismaClient.workUnit.delete({

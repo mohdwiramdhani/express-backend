@@ -12,7 +12,7 @@ const errorMiddleware = async (err, req, res, next) => {
         }).end();
     } else if (err.code === 'LIMIT_FILE_SIZE') {
         res.status(400).json({
-            errors: 'File too large'
+            errors: 'File yang diunggah terlalu besar'
         }).end();
     } else {
         res.status(500).json({

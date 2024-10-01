@@ -4,7 +4,7 @@ const create = async (req, res, next) => {
     try {
         await workUnitService.create(req.body);
 
-        res.status(201).json({ message: "Work Unit created successfully" });
+        res.status(201).json({ message: "Unit kerja berhasil ditambahkan" });
     } catch (e) {
         next(e);
     }
@@ -16,7 +16,7 @@ const get = async (req, res, next) => {
         const result = await workUnitService.get(id);
         res.status(200).json({
             data: result,
-            message: "Work Unit retrieved successfully"
+            message: "Unit kerja berhasil ditemukan"
         });
     } catch (e) {
         next(e);
@@ -28,7 +28,7 @@ const getAll = async (req, res, next) => {
         const result = await workUnitService.getAll();
         res.status(200).json({
             data: result,
-            message: "All Work Units retrieved successfully"
+            message: "Semua unit kerja berhasil ditemukan"
         });
     } catch (e) {
         next(e);
@@ -43,7 +43,7 @@ const update = async (req, res, next) => {
 
         await workUnitService.update(id, request);
         res.status(200).json({
-            message: "Work Unit updated successfully"
+            message: "Unit kerja berhasil diperbarui"
         });
     } catch (e) {
         next(e);
@@ -56,7 +56,7 @@ const remove = async (req, res, next) => {
 
         await workUnitService.remove(id);
         res.status(200).json({
-            message: "Work Unit deleted successfully"
+            message: "Unit kerja berhasil dihapus"
         });
     } catch (e) {
         next(e);

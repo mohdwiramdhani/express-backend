@@ -5,7 +5,7 @@ const create = async (req, res, next) => {
         const userId = req.user.id;
 
         await profileService.create(userId, req.body);
-        res.status(201).json({ message: "Profile created successfully" });
+        res.status(201).json({ message: "Profil berhasil dibuat" });
     } catch (e) {
         next(e);
     }
@@ -18,7 +18,7 @@ const get = async (req, res, next) => {
         const profile = await profileService.get(userId);
         res.status(200).json({
             data: profile,
-            message: "Profile retrieved successfully",
+            message: "Profil berhasil ditemukan",
         });
     } catch (e) {
         next(e);
@@ -30,7 +30,7 @@ const update = async (req, res, next) => {
         const userId = req.user.id;
 
         await profileService.update(userId, req.body);
-        res.status(200).json({ message: "Profile updated successfully" });
+        res.status(200).json({ message: "Profil berhasil diperbarui" });
     } catch (e) {
         next(e);
     }

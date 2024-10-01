@@ -15,7 +15,7 @@ const register = async (request) => {
     });
 
     if (countMember > 0) {
-        throw new ResponseError(400, "NIK already exists");
+        throw new ResponseError(400, "NIK sudah digunakan");
     }
 
     const workUnit = await prismaClient.workUnit.findUnique({
@@ -23,7 +23,7 @@ const register = async (request) => {
     });
 
     if (!workUnit) {
-        throw new ResponseError(400, "Work Unit not found");
+        throw new ResponseError(400, "Unit Kerja tidak ditemukan");
     }
 
     const hashedPassword = await bcrypt.hash(usernamePassword, 10);
@@ -78,7 +78,7 @@ const get = async (id) => {
     });
 
     if (!member) {
-        throw new ResponseError(404, "Member not found");
+        throw new ResponseError(404, "Anggota tidak ditemukan");
     }
 
     const { username, role: { name: role }, memberProfile } = member;
@@ -97,7 +97,6 @@ const get = async (id) => {
     };
 
     return formattedMember;
-
 };
 
 const getAll = async () => {
@@ -146,7 +145,7 @@ const update = async (id, request) => {
     });
 
     if (!member) {
-        throw new ResponseError(404, "Member not found");
+        throw new ResponseError(404, "Anggota tidak ditemukan");
     }
 
     const updatedProfileData = {
@@ -163,10 +162,6 @@ const update = async (id, request) => {
         where: { memberId: id },
         data: updatedProfileData
     });
-
-    return {
-        message: "Member updated successfully"
-    };
 };
 
 const remove = async (id) => {
@@ -177,7 +172,7 @@ const remove = async (id) => {
     });
 
     if (!member) {
-        throw new ResponseError(404, "Member not found");
+        throw new ResponseError(404, "Anggota tidak ditemukan");
     }
 
     await prismaClient.memberProfile.delete({
@@ -187,10 +182,6 @@ const remove = async (id) => {
     await prismaClient.member.delete({
         where: { id }
     });
-
-    return {
-        message: "Member deleted successfully"
-    };
 };
 
 export default {

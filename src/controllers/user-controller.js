@@ -4,7 +4,7 @@ const register = async (req, res, next) => {
     try {
         await userService.register(req.body);
 
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "Pengguna berhasil didaftarkan" });
     } catch (e) {
         next(e);
     }
@@ -14,7 +14,7 @@ const registerStaff = async (req, res, next) => {
     try {
         await userService.registerStaff(req.body);
 
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "Pengguna dengan peran staff berhasil ditambahkan" });
     } catch (e) {
         next(e);
     }
@@ -26,7 +26,7 @@ const login = async (req, res, next) => {
 
         res.status(200).json({
             data: result,
-            message: "Login successful"
+            message: "Login berhasil"
         });
     } catch (e) {
         next(e);
@@ -40,7 +40,7 @@ const get = async (req, res, next) => {
 
         res.status(200).json({
             data: result,
-            message: "User retrieved successfully"
+            message: "Pengguna berhasil ditemukan"
         });
     } catch (e) {
         next(e);
@@ -54,26 +54,26 @@ const update = async (req, res, next) => {
 
         await userService.update(request);
         res.status(200).json({
-            message: "User updated successfully"
+            message: "Pengguna berhasil diperbarui"
         });
     } catch (e) {
         next(e);
     }
 };
 
-const refreshToken = async (req, res, next) => {
-    try {
-        const { refreshToken } = req.body;
-        const result = await userService.refreshToken(refreshToken);
+// const refreshToken = async (req, res, next) => {
+//     try {
+//         const { refreshToken } = req.body;
+//         const result = await userService.refreshToken(refreshToken);
 
-        res.status(200).json({
-            data: result,
-            message: "Token refreshed successfully"
-        });
-    } catch (e) {
-        next(e);
-    }
-};
+//         res.status(200).json({
+//             data: result,
+//             message: "Token refreshed successfully"
+//         });
+//     } catch (e) {
+//         next(e);
+//     }
+// };
 
 const removeStaff = async (req, res, next) => {
     try {
@@ -81,7 +81,7 @@ const removeStaff = async (req, res, next) => {
 
         await userService.removeStaff(id);
         res.status(200).json({
-            message: "Staff deleted successfully"
+            message: "Staf berhasil dihapus"
         });
     } catch (e) {
         next(e);
@@ -94,6 +94,6 @@ export default {
     login,
     get,
     update,
-    refreshToken,
+    // refreshToken,
     removeStaff
 };
