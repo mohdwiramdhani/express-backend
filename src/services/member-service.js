@@ -102,6 +102,7 @@ const get = async (id) => {
 const getAll = async () => {
     const members = await prismaClient.member.findMany({
         select: {
+            id: true,
             username: true,
             role: {
                 select: {
@@ -124,6 +125,7 @@ const getAll = async () => {
     });
 
     return members.map(member => ({
+        id: member.id,
         username: member.username,
         role: member.role.name,
         fullName: member.memberProfile.fullName,
