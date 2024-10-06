@@ -124,6 +124,30 @@ const get = async (id) => {
     return user;
 };
 
+const getAll = async () => {
+    const users = await prismaClient.user.findMany({
+        select: {
+            id: true,
+            username: true,
+            role: {
+                select: {
+                    name: true
+                }
+            },
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    return users.map(user => ({
+        id: user.id,
+        username: user.username,
+        role: user.role.name,
+        createdAt: formatTimezone(user.createdAt),
+        updatedAt: formatTimezone(user.updatedAt)
+    }));
+};
+
 const update = async (request) => {
     const user = validate(updateUserValidation, request);
 
@@ -215,6 +239,7 @@ export default {
     registerStaff,
     login,
     get,
+    getAll,
     update,
     // refreshToken,
     removeStaff

@@ -47,6 +47,19 @@ const get = async (req, res, next) => {
     }
 };
 
+const getAll = async (req, res, next) => {
+    try {
+        const result = await userService.getAll();
+
+        res.status(200).json({
+            data: result,
+            message: "Semua user berhasil ditemukan"
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 const update = async (req, res, next) => {
     try {
         const id = req.user.id;
@@ -93,6 +106,7 @@ export default {
     registerStaff,
     login,
     get,
+    getAll,
     update,
     // refreshToken,
     removeStaff
