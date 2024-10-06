@@ -63,10 +63,21 @@ const remove = async (req, res, next) => {
     }
 };
 
+const resetPassword = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        await memberService.resetPassword(id);
+        res.status(200).json({ message: "Password berhasil direset" });
+    } catch (e) {
+        next(e);
+    }
+};
+
 export default {
     register,
     get,
     getAll,
     update,
-    remove
+    remove,
+    resetPassword
 };

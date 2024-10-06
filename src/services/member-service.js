@@ -143,7 +143,14 @@ const update = async (id, request) => {
     id = validate(getMemberValidation, id);
 
     const member = await prismaClient.member.findUnique({
-        where: { id }
+        where: { id },
+        select: {
+            memberProfile: {
+                select: {
+                    nik: true,
+                }
+            }
+        }
     });
 
     if (!member) {
@@ -159,6 +166,19 @@ const update = async (id, request) => {
         photoUrl: request.photoUrl,
         workUnitId: request.workUnitId
     };
+
+    if (request.nik && request.nik !== member.memberProfile.nik) {
+        const newUsername = request.nik;
+        const newPassword = await bcrypt.hash(newUsername, 10);
+
+        await prismaClient.member.update({
+            where: { id },
+            data: {
+                username: newUsername,
+                password: newPassword
+            }
+        });
+    }
 
     await prismaClient.memberProfile.update({
         where: { memberId: id },
@@ -186,10 +206,41 @@ const remove = async (id) => {
     });
 };
 
+const resetPassword = async (id) => {
+    id = validate(getMemberValidation, id);
+
+    const member = await prismaClient.member.findUnique({
+        where: { id },
+        select: {
+            memberProfile: {
+                select: {
+                    nik: true
+                }
+            }
+        }
+    });
+
+    if (!member) {
+        throw new ResponseError(404, "Anggota tidak ditemukan");
+    }
+
+    const nik = member.memberProfile.nik;
+
+    const newPassword = await bcrypt.hash(nik, 10);
+
+    await prismaClient.member.update({
+        where: { id },
+        data: {
+            password: newPassword
+        }
+    });
+};
+
 export default {
     register,
     get,
     getAll,
     update,
-    remove
+    remove,
+    resetPassword
 };
