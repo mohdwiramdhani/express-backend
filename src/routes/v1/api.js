@@ -13,11 +13,13 @@ userRouter.use(authMiddleware);
 userRouter.post('/users/register', adminMiddleware, userController.registerStaff);
 userRouter.get('/users/current', userController.get);
 userRouter.patch('/users/current', userController.update);
+userRouter.get('/users', adminMiddleware, userController.getAll);
 userRouter.delete('/users/:id', adminMiddleware, userController.removeStaff);
 
 // Profile API
 userRouter.get('/profile/current', profileController.get);
 userRouter.patch('/profile/current', profileController.update);
+userRouter.get('/profiles', adminMiddleware, profileController.getAll);
 
 // Work Unit API
 userRouter.post('/work-unit', workUnitController.create);
@@ -32,6 +34,7 @@ userRouter.get('/members/:id', memberController.get);
 userRouter.get('/members', memberController.getAll);
 userRouter.patch('/members/:id', memberController.update);
 userRouter.delete('/members/:id', memberController.remove);
+userRouter.post('/members/:id/reset-password', memberController.resetPassword);
 
 export {
     userRouter
