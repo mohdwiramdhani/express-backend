@@ -25,6 +25,19 @@ const get = async (req, res, next) => {
     }
 };
 
+const getAll = async (req, res, next) => {
+    try {
+        const result = await profileService.getAll();
+
+        res.status(200).json({
+            data: result,
+            message: "Semua profil berhasil ditemukan"
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 const update = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -39,5 +52,6 @@ const update = async (req, res, next) => {
 export default {
     create,
     get,
+    getAll,
     update
 };

@@ -34,6 +34,32 @@ const get = async (userId) => {
     return profile;
 };
 
+const getAll = async () => {
+    const profiles = await prismaClient.profile.findMany({
+        select: {
+            userId: true,
+            fullName: true,
+            nik: true,
+            phoneNumber: true,
+            address: true,
+            dateOfBirth: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+
+    return profiles.map(profile => ({
+        userId: profile.userId,
+        fullName: profile.fullName,
+        nik: profile.nik,
+        phoneNumber: profile.phoneNumber,
+        address: profile.address,
+        dateOfBirth: profile.dateOfBirth ? formatDate(profile.dateOfBirth) : null,
+        createdAt: formatTimezone(profile.createdAt),
+        updatedAt: formatTimezone(profile.updatedAt),
+    }));
+};
+
 const update = async (userId, request) => {
     const profile = validate(updateProfileValidation, request);
 
@@ -56,5 +82,6 @@ const update = async (userId, request) => {
 
 export default {
     get,
+    getAll,
     update
 };
