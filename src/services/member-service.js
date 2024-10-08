@@ -10,6 +10,14 @@ const register = async (request) => {
 
     const usernamePassword = member.nik;
 
+    const countMemberNumber = await prismaClient.memberProfile.count({
+        where: { memberNumber: member.memberNumber }
+    });
+
+    if (countMemberNumber > 0) {
+        throw new ResponseError(400, "Nomor Anggota sudah digunakan");
+    }
+
     const countMember = await prismaClient.member.count({
         where: { username: usernamePassword }
     });
@@ -38,13 +46,14 @@ const register = async (request) => {
 
     await prismaClient.memberProfile.create({
         data: {
+            memberNumber: member.memberNumber,
             fullName: member.fullName,
             nik: member.nik,
             phoneNumber: member.phoneNumber,
             address: member.address,
             dateOfBirth: member.dateOfBirth,
             workUnitId: member.workUnitId,
-            memberId: newMember.id
+            memberId: newMember.id,
         }
     });
 };
@@ -63,6 +72,7 @@ const get = async (id) => {
             },
             memberProfile: {
                 select: {
+                    memberNumber: true,
                     fullName: true,
                     nik: true,
                     phoneNumber: true,
@@ -70,8 +80,7 @@ const get = async (id) => {
                     dateOfBirth: true,
                     photoUrl: true,
                     createdAt: true,
-                    updatedAt: true
-
+                    updatedAt: true,
                 }
             }
         }
@@ -84,6 +93,7 @@ const get = async (id) => {
     const { username, role: { name: role }, memberProfile } = member;
 
     const formattedMember = {
+        memberNumber: memberProfile.memberNumber,
         username,
         role,
         fullName: memberProfile.fullName,
@@ -93,7 +103,7 @@ const get = async (id) => {
         dateOfBirth: formatDate(memberProfile.dateOfBirth),
         photoUrl: memberProfile.photoUrl,
         createdAt: formatTimezone(memberProfile.createdAt),
-        updatedAt: formatTimezone(memberProfile.updatedAt)
+        updatedAt: formatTimezone(memberProfile.updatedAt),
     };
 
     return formattedMember;
@@ -111,6 +121,7 @@ const getAll = async () => {
             },
             memberProfile: {
                 select: {
+                    memberNumber: true,
                     fullName: true,
                     nik: true,
                     phoneNumber: true,
@@ -118,7 +129,7 @@ const getAll = async () => {
                     dateOfBirth: true,
                     photoUrl: true,
                     createdAt: true,
-                    updatedAt: true
+                    updatedAt: true,
                 }
             }
         }
@@ -126,6 +137,7 @@ const getAll = async () => {
 
     return members.map(member => ({
         id: member.id,
+        memberNumber: member.memberProfile.memberNumber,
         username: member.username,
         role: member.role.name,
         fullName: member.memberProfile.fullName,
@@ -135,7 +147,7 @@ const getAll = async () => {
         dateOfBirth: formatDate(member.memberProfile.dateOfBirth),
         photoUrl: member.memberProfile.photoUrl,
         createdAt: formatTimezone(member.memberProfile.createdAt),
-        updatedAt: formatTimezone(member.memberProfile.updatedAt)
+        updatedAt: formatTimezone(member.memberProfile.updatedAt),
     }));
 };
 
@@ -148,6 +160,7 @@ const update = async (id, request) => {
             memberProfile: {
                 select: {
                     nik: true,
+                    memberNumber: true
                 }
             }
         }
@@ -158,13 +171,14 @@ const update = async (id, request) => {
     }
 
     const updatedProfileData = {
+        memberNumber: request.memberNumber,
         fullName: request.fullName,
         nik: request.nik,
         phoneNumber: request.phoneNumber,
         address: request.address,
         dateOfBirth: request.dateOfBirth,
         photoUrl: request.photoUrl,
-        workUnitId: request.workUnitId
+        workUnitId: request.workUnitId,
     };
 
     if (request.nik && request.nik !== member.memberProfile.nik) {
@@ -178,6 +192,16 @@ const update = async (id, request) => {
                 password: newPassword
             }
         });
+    }
+
+    if (request.memberNumber && request.memberNumber !== member.memberProfile.memberNumber) {
+        const countMemberNumber = await prismaClient.memberProfile.count({
+            where: { memberNumber: request.memberNumber }
+        });
+
+        if (countMemberNumber > 0) {
+            throw new ResponseError(400, "Nomor Anggota sudah digunakan");
+        }
     }
 
     await prismaClient.memberProfile.update({

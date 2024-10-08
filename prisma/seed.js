@@ -72,7 +72,7 @@ const createUser = async (username, password, roleId) => {
     }
 };
 
-const createMember = async (fullName, nik, phoneNumber, address, dateOfBirth, workUnitName) => {
+const createMember = async (memberNumber, fullName, nik, phoneNumber, address, dateOfBirth, workUnitName) => {
 
     const usernamePassword = nik;
 
@@ -98,6 +98,7 @@ const createMember = async (fullName, nik, phoneNumber, address, dateOfBirth, wo
         await prisma.memberProfile.create({
             data: {
                 fullName,
+                memberNumber,
                 nik,
                 phoneNumber,
                 address,
@@ -119,8 +120,8 @@ const seed = async () => {
         await createWorkUnits();
         await createUser("admin", "12345", 1);
         await createUser("staff", "12345", 2);
-        await createMember("Uzumaki Naruto", "7204070203880002", "08123456789", "Jl. Lama", new Date("1988-03-02"), "Dinas Bina Marga");
-        await createMember("Jane Smith", "7204060101980001", "08234567890", "Jl. Baru", new Date("1998-01-01"), "Dinas Perpustakaan");
+        await createMember("123", "Uzumaki Naruto", "7204070203880002", "08123456789", "Jl. Lama", new Date("1988-03-02"), "Dinas Bina Marga");
+        await createMember("124", "Jane Smith", "7204060101980001", "08234567890", "Jl. Baru", new Date("1998-01-01"), "Dinas Perpustakaan");
     } catch (error) {
         logger.error('Error during seeding process:', error);
     } finally {

@@ -61,17 +61,18 @@ model Member {
 }
 
 model MemberProfile {
-  id          Int       @id @default(autoincrement())
-  fullName    String?   @db.VarChar(255)
-  nik         String?   @unique @db.VarChar(16)
-  phoneNumber String?   @db.VarChar(20)
-  address     String?   @db.Text
-  dateOfBirth DateTime?
-  workUnitId  Int
-  photoUrl    String?   @db.VarChar(255)
-  memberId    Int       @unique
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  id           Int       @id @default(autoincrement())
+  memberNumber String?   @unique @db.VarChar(10)
+  fullName     String?   @db.VarChar(255)
+  nik          String?   @unique @db.VarChar(16)
+  phoneNumber  String?   @db.VarChar(20)
+  address      String?   @db.Text
+  dateOfBirth  DateTime?
+  workUnitId   Int
+  photoUrl     String?   @db.VarChar(255)
+  memberId     Int       @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
 
   workUnit WorkUnit @relation(fields: [workUnitId], references: [id])
   member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)

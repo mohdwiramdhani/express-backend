@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `member_profiles` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `memberNumber` VARCHAR(10) NULL,
     `fullName` VARCHAR(255) NULL,
     `nik` VARCHAR(16) NULL,
     `phoneNumber` VARCHAR(20) NULL,

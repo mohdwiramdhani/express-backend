@@ -2,6 +2,11 @@ import Joi from "joi";
 import { joiValidation } from "../utils/translate-utils.js";
 
 const registerMemberValidation = Joi.object({
+    memberNumber: Joi.string()
+        .max(20)
+        .pattern(/^[0-9]+$/)
+        .required()
+        .messages(joiValidation('Nomor anggota')),
     fullName: Joi.string()
         .max(255)
         .required()
