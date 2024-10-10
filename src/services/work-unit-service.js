@@ -48,13 +48,14 @@ const getAll = async () => {
 };
 
 const update = async (id, request) => {
+    id = validate(getWorkUnitValidation, id);
     const workUnit = validate(updateWorkUnitValidation, request);
 
     const existingWorkUnit = await prismaClient.workUnit.findFirst({
         where: {
             name: workUnit.name,
             NOT: {
-                id: parseInt(id),
+                id,
             },
         },
     });
@@ -64,7 +65,7 @@ const update = async (id, request) => {
     }
 
     const targetWorkUnit = await prismaClient.workUnit.findUnique({
-        where: { id: parseInt(id) },
+        where: { id },
     });
 
     if (!targetWorkUnit) {
@@ -72,7 +73,7 @@ const update = async (id, request) => {
     }
 
     await prismaClient.workUnit.update({
-        where: { id: parseInt(id) },
+        where: { id },
         data: workUnit,
     });
 };

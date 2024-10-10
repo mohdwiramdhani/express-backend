@@ -35,10 +35,9 @@ const getAll = async (req, res, next) => {
     }
 };
 
-//ERROR
 const update = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id, 10);
+        const id = req.params.id;
         const request = req.body;
 
         await workUnitService.update(id, request);
