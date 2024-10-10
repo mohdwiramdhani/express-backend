@@ -41,7 +41,43 @@ const getMemberValidation = Joi.number()
     .required()
     .messages(joiValidation('ID anggota'));
 
+const updateMemberValidation = Joi.object({
+    memberNumber: Joi.string()
+        .max(20)
+        .pattern(/^[0-9]+$/)
+        .optional()
+        .messages(joiValidation('Nomor anggota')),
+    fullName: Joi.string()
+        .max(255)
+        .optional()
+        .messages(joiValidation('Nama lengkap')),
+    nik: Joi.string()
+        .length(16)
+        .pattern(/^[0-9]+$/)
+        .optional()
+        .messages(joiValidation('NIK')),
+    phoneNumber: Joi.string()
+        .max(20)
+        .allow(null, '')
+        .messages(joiValidation('Nomor telepon')),
+    address: Joi.string()
+        .allow(null, '')
+        .messages(joiValidation('Alamat')),
+    dateOfBirth: Joi.date()
+        .allow(null, '')
+        .messages(joiValidation('Tanggal lahir')),
+    photoUrl: Joi.string()
+        .uri()
+        .allow(null, '')
+        .messages(joiValidation('URL foto')),
+    workUnitId: Joi.number()
+        .integer()
+        .optional()
+        .messages(joiValidation('ID unit kerja'))
+});
+
 export {
     registerMemberValidation,
-    getMemberValidation
+    getMemberValidation,
+    updateMemberValidation
 };

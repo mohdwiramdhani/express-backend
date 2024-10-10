@@ -1,5 +1,5 @@
 import { validate } from "../validations/validation.js";
-import { registerMemberValidation, getMemberValidation } from "../validations/member-validation.js";
+import { registerMemberValidation, getMemberValidation, updateMemberValidation } from "../validations/member-validation.js";
 import { prismaClient } from "../config/database.js";
 import { ResponseError } from "../errors/response-error.js";
 import bcrypt from "bcrypt";
@@ -153,8 +153,9 @@ const getAll = async () => {
 
 const update = async (id, request) => {
     id = validate(getMemberValidation, id);
+    const member = validate(updateMemberValidation, request);
 
-    const member = await prismaClient.member.findUnique({
+    const existingMember = await prismaClient.member.findUnique({
         where: { id },
         select: {
             memberProfile: {
@@ -166,23 +167,23 @@ const update = async (id, request) => {
         }
     });
 
-    if (!member) {
+    if (!existingMember) {
         throw new ResponseError(404, "Anggota tidak ditemukan");
     }
 
     const updatedProfileData = {
-        memberNumber: request.memberNumber,
-        fullName: request.fullName,
-        nik: request.nik,
-        phoneNumber: request.phoneNumber,
-        address: request.address,
-        dateOfBirth: request.dateOfBirth,
-        photoUrl: request.photoUrl,
-        workUnitId: request.workUnitId,
+        memberNumber: member.memberNumber,
+        fullName: member.fullName,
+        nik: member.nik,
+        phoneNumber: member.phoneNumber,
+        address: member.address,
+        dateOfBirth: member.dateOfBirth,
+        photoUrl: member.photoUrl,
+        workUnitId: member.workUnitId,
     };
 
-    if (request.nik && request.nik !== member.memberProfile.nik) {
-        const newUsername = request.nik;
+    if (member.nik && member.nik !== existingMember.memberProfile.nik) {
+        const newUsername = member.nik;
         const newPassword = await bcrypt.hash(newUsername, 10);
 
         await prismaClient.member.update({
@@ -194,14 +195,22 @@ const update = async (id, request) => {
         });
     }
 
-    if (request.memberNumber && request.memberNumber !== member.memberProfile.memberNumber) {
+    if (member.memberNumber && member.memberNumber !== existingMember.memberProfile.memberNumber) {
         const countMemberNumber = await prismaClient.memberProfile.count({
-            where: { memberNumber: request.memberNumber }
+            where: { memberNumber: member.memberNumber }
         });
 
         if (countMemberNumber > 0) {
             throw new ResponseError(400, "Nomor Anggota sudah digunakan");
         }
+    }
+
+    const workUnit = await prismaClient.workUnit.findUnique({
+        where: { id: member.workUnitId }
+    });
+
+    if (!workUnit) {
+        throw new ResponseError(400, "Unit Kerja tidak ditemukan");
     }
 
     await prismaClient.memberProfile.update({
