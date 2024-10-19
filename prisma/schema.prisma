@@ -77,6 +77,8 @@ model MemberProfile {
   workUnit WorkUnit @relation(fields: [workUnitId], references: [id])
   member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
+  memberSavings MemberSaving[]
+
   @@map("member_profiles")
 }
 
@@ -84,6 +86,26 @@ model WorkUnit {
   id            Int             @id @default(autoincrement())
   name          String          @unique @db.VarChar(50)
   memberProfile MemberProfile[]
+  memberSavings MemberSaving[]
 
   @@map("work_units")
+}
+
+model MemberSaving {
+  id              Int           @id @default(autoincrement())
+  year            Int           @db.Int
+  month           Int           @db.Int
+  principal       Float?        @default(0)
+  mandatory       Float?        @default(0)
+  voluntary       Float?        @default(0)
+  memberProfileId Int
+  memberProfile   MemberProfile @relation(fields: [memberProfileId], references: [id])
+  workUnitId      Int
+  workUnit        WorkUnit      @relation(fields: [workUnitId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+
+  @@unique([year, month, memberProfileId])
+  @@index([memberProfileId, year, month])
+  @@map("member_savings")
 }
