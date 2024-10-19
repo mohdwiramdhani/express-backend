@@ -27,9 +27,11 @@ const createRoles = async () => {
 
 const createWorkUnits = async () => {
     const workUnits = [
-        { name: "Dinas Bina Marga" },
-        { name: "Dinas Perpustakaan" },
-        { name: "BPS" }
+        { name: "SMP 3 Tolitoli" },
+        { name: "SMP 2 Tolitoli" },
+        { name: "SMP 1 Tolitoli" },
+        { name: "SMK 1 Tolitoli" },
+        { name: "SMA 1 Tolitoli" }
     ];
 
     for (const workUnit of workUnits) {
@@ -73,7 +75,6 @@ const createUser = async (username, password, roleId) => {
 };
 
 const createMember = async (memberNumber, fullName, nik, phoneNumber, address, dateOfBirth, workUnitName) => {
-
     const usernamePassword = nik;
 
     const hashedPassword = await bcrypt.hash(usernamePassword, 10);
@@ -114,14 +115,34 @@ const createMember = async (memberNumber, fullName, nik, phoneNumber, address, d
     }
 };
 
+const createMultipleMembers = async (count) => {
+    const workUnits = await prisma.workUnit.findMany();
+
+    for (let i = 1; i <= count; i++) {
+        const memberNumber = `${i.toString().padStart(3, '0')}`;
+        const fullName = `Member ${i}`;
+
+        const nikBase = "720407020388";
+        const nik = `${nikBase}${i.toString().padStart(4, '0')}`;
+
+        const phoneNumber = `0812345678${i.toString().padStart(3, '0')}`;
+        const address = `Jl. Contoh No.${i}`;
+        const dateOfBirth = new Date("1990-01-01");
+
+        const randomWorkUnit = workUnits[Math.floor(Math.random() * workUnits.length)];
+
+        await createMember(memberNumber, fullName, nik, phoneNumber, address, dateOfBirth, randomWorkUnit.name);
+    }
+};
+
+
 const seed = async () => {
     try {
         await createRoles();
         await createWorkUnits();
         await createUser("admin", "12345", 1);
         await createUser("staff", "12345", 2);
-        await createMember("123", "Uzumaki Naruto", "7204070203880002", "08123456789", "Jl. Lama", new Date("1988-03-02"), "Dinas Bina Marga");
-        await createMember("124", "Jane Smith", "7204060101980001", "08234567890", "Jl. Baru", new Date("1998-01-01"), "Dinas Perpustakaan");
+        await createMultipleMembers(100);
     } catch (error) {
         logger.error('Error during seeding process:', error);
     } finally {

@@ -5,6 +5,7 @@ import userController from "../../controllers/user-controller.js";
 import profileController from "../../controllers/profile-controller.js";
 import workUnitController from "../../controllers/work-unit-controller.js";
 import memberController from "../../controllers/member-controller.js";
+import memberSavingController from "../../controllers/member-saving-controller.js";
 
 const userRouter = new express.Router();
 userRouter.use(authMiddleware);
@@ -35,6 +36,9 @@ userRouter.get('/members', memberController.getAll);
 userRouter.patch('/members/:id', memberController.update);
 userRouter.delete('/members/:id', memberController.remove);
 userRouter.post('/members/:id/reset-password', memberController.resetPassword);
+
+// Member API
+userRouter.post('/savings', memberSavingController.create);
 
 export {
     userRouter
