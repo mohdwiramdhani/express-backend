@@ -37,7 +37,7 @@ userRouter.patch('/members/:id', memberController.update);
 userRouter.delete('/members/:id', memberController.remove);
 userRouter.post('/members/:id/reset-password', memberController.resetPassword);
 
-// Member API
+// Member Saving API
 userRouter.post('/savings', memberSavingController.create);
 
 export {
