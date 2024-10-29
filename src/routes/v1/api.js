@@ -39,6 +39,8 @@ userRouter.post('/members/:id/reset-password', memberController.resetPassword);
 
 // Member Saving API
 userRouter.post('/savings', memberSavingController.create);
+userRouter.get('/savings/:year', memberSavingController.getByYear);
+userRouter.get('/savings/:year/work-unit/:workUnitId', memberSavingController.getByYearAndWorkUnit);
 
 export {
     userRouter

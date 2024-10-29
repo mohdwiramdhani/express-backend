@@ -10,6 +10,29 @@ const create = async (req, res, next) => {
     }
 };
 
+const getByYear = async (req, res, next) => {
+    try {
+        const year = parseInt(req.params.year);
+        const savings = await memberSavingService.getByYear(year);
+        res.status(200).json(savings);
+    } catch (e) {
+        next(e);
+    }
+};
+
+const getByYearAndWorkUnit = async (req, res, next) => {
+    try {
+        const year = parseInt(req.params.year);
+        const workUnitId = parseInt(req.params.workUnitId);
+        const savings = await memberSavingService.getByYearAndWorkUnit(year, workUnitId);
+        res.status(200).json(savings);
+    } catch (e) {
+        next(e);
+    }
+};
+
 export default {
     create,
+    getByYear,
+    getByYearAndWorkUnit
 };

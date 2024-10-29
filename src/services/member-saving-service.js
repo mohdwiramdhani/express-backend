@@ -49,6 +49,69 @@ const create = async (request) => {
     }
 };
 
+const getByYear = async (year) => {
+    const savings = await prismaClient.memberSaving.findMany({
+        where: { year },
+        include: {
+            memberProfile: {
+                include: {
+                    workUnit: true,
+                }
+            }
+        },
+        orderBy: [
+            { memberProfile: { workUnitId: 'asc' } },
+            { month: 'asc' }
+        ]
+    });
+
+    if (savings.length === 0) {
+        throw new ResponseError(404, `Tidak ada data simpanan untuk tahun ${year}`);
+    }
+
+    return savings.map(saving => ({
+        memberId: saving.memberProfile.id,
+        memberName: saving.memberProfile.fullName,
+        workUnit: saving.memberProfile.workUnit.name,
+        year: saving.year,
+        month: saving.month,
+        principal: saving.principal,
+        mandatory: saving.mandatory,
+        voluntary: saving.voluntary,
+    }));
+};
+
+const getByYearAndWorkUnit = async (year, workUnitId) => {
+    const savings = await prismaClient.memberSaving.findMany({
+        where: {
+            year,
+            memberProfile: {
+                workUnitId
+            }
+        },
+        include: {
+            memberProfile: true
+        },
+        orderBy: { month: 'asc' }
+    });
+
+    if (savings.length === 0) {
+        throw new ResponseError(404, `Tidak ada data simpanan untuk tahun ${year} di unit kerja tersebut.`);
+    }
+
+    return savings.map(saving => ({
+        memberId: saving.memberProfile.id,
+        memberName: saving.memberProfile.fullName,
+        year: saving.year,
+        month: saving.month,
+        principal: saving.principal,
+        mandatory: saving.mandatory,
+        voluntary: saving.voluntary,
+    }));
+};
+
 export default {
     create,
+    getByYear,
+    getByYearAndWorkUnit
 };
